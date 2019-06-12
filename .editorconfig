@@ -1,0 +1,26 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[./lib/*.js]
+trim_trailing_whitespace = true
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+
+[{.,./lib}/*.js]
+trim_trailing_whitespace = true
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+
+# npm inserts a final newline.
+[package.json]
+insert_final_newline = true
+trim_trailing_whitespace = false

@@ -1,0 +1,17 @@
+{
+    "name": "solc-lsp",
+    "description": "A library for Solidity LSP functions",
+    "author": "Rocky Bernstein",
+    "license": "MIT",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rocky/solc-lsp"
+    },
+    "dependencies": {
+        "solc": "^0.5.9",
+        "remix-lib": "^0.4.6"
+    },
+    "main": "./index.js",
+  "scripts": {}
+}
