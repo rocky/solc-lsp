@@ -9,9 +9,11 @@
         "url": "https://github.com/rocky/solc-lsp"
     },
     "dependencies": {
+        "remix-astwalker": "file:../remix/remix-astwalker",
         "solc": "^0.5.9",
-        "remix-lib": "^0.4.6"
+        "tsun": "^0.5.0",
+        "typescript": "^3.5.2"
     },
     "main": "./index.js",
-  "scripts": {}
+    "scripts": {}
 }
