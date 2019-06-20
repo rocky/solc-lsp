@@ -1,4 +1,10 @@
-/package-lock.json
 *~
+/.nyc_output
+/coverage
+/out
+/package-lock.json
 node_modules
 tmp
+/.vscode
+/vscode/launch.json
+/vscode/tasks.json

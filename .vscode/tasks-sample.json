@@ -1,0 +1,9 @@
+{
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "npmtest",
+        "command": "npm",
+        "args": ["test"],
+        "type": "shell"
+    }]
+}

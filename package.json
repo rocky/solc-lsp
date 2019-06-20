@@ -11,9 +11,19 @@
     "dependencies": {
         "remix-astwalker": "file:../remix/remix-astwalker",
         "solc": "^0.5.9",
-        "tsun": "^0.5.0",
+        "@types/tape": "^4.2.33",
+        "nyc": "^13.3.0",
+        "tape": "^4.10.1",
+        "ts-node": "^8.0.3",
         "typescript": "^3.5.2"
     },
-    "main": "./index.js",
-    "scripts": {}
+    "devDependencies": {
+        "tap-spec": "^5.0.0"
+    },
+    "main": "./src/index.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/*.ts | tap-spec; nyc report ---reporter=text",
+        "prepublish": "npm run build"
+    }
 }
