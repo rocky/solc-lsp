@@ -1,4 +1,5 @@
 "use strict";
+import { statSync, readFileSync } from 'fs';
 
 // import * as solc from "solc";
 
@@ -9,45 +10,106 @@ const remixAST = require("../node_modules/remix-astwalker/dist");
 import { getDefinition, getTypeDefinition } from "./astFns";
 import { LineColRange } from "./types";
 
+/* Here we have barebones configuration.
+*/
+const default_config = {
+  logger: console
+};
+
+/**
+  * Reads (Solidity) file passed and returns the
+  * contents of that file.
+  *
+  * FIXME: This could be made asynchronous for better performance.
+*/
+export function getFileContent(filepath: string) {
+  const stats = statSync(filepath);
+  if (stats.isFile()) {
+    return readFileSync(filepath).toString();
+  } else {
+    throw `File "${filepath}" not found`;
+  }
+}
+
+/**
+ * Called back by the solc when there is an import.
+ *
+ * FIXME: Here we do the simplest, stupidist thing and just look
+ * up the name. You can imagine more sophisticated mechanisms.
+ *
+ */
+function getImports(pathName: string) {
+  try {
+    return { contents: getFileContent(pathName) };
+  } catch (e) {
+    return {
+      error: `${e.mssage}`
+    }
+  }
+}
+
+
+/**
+ * A LSP manager for Solidity files.
+ */
 export class LspManager {
 
+  config = { ...default_config };
   fileInfo: any;
 
-  constructor() {
-    // Key is by path
+  constructor(config: any) {
+    this.config = { ...config, ...default_config };
     this.fileInfo = {};
   };
 
 
-  compile(solidityStr: string, path: string, options: any) {
-    if (options.logger === undefined)
-      options.logger = console;
-    const sources = {};
-    sources[path] = {
-      "content": solidityStr,
+  compile(solidityStr: string, path: string, options:
+    any = { logger: this.config.logger }) {
+
+    let logger = {
+      ...this.config.logger, ...options.logger
     };
 
-    const solcStandardInput = {
-      "language": "Solidity",
-      sources: sources,
-      settings: {
-        // Of the output produced, what part of it?
-        outputSelection: {
-          "*": {
-            "": ["ast"] // Just return the AST - nothing else
-          }
-        },
-        optimizer: {
-          enabled: false // Since we just want AST info, no optimizer please.
-        }
+    debugger;
+    const sources = {
+      [path]: {
+        // Content field is what solc uses. The other fields we have here should be ignored.
+        "content": solidityStr,
       }
     };
-    const compiled = solc.compile(JSON.stringify(solcStandardInput));
+
+
+    const solcStandardInput = {
+      ...{
+        "language": "Solidity",
+        sources: sources,  // Note: "content" set above.
+        settings: {
+          // Of the output produced, what part of it?
+          outputSelection: {
+            "*": {
+              "": ["ast"] // Just return the AST - nothing else
+            }
+          },
+          optimizer: {
+            enabled: false // Since we just want AST info, no optimizer please.
+          }
+        }
+      }, ...options.solcStandardInput
+    };
+
+    let compiled: any;
+    try {
+      compiled = solc.compile(JSON.stringify(solcStandardInput), getImports);
+    } catch (err) {
+      logger.log(err);
+      return {};
+    }
     try {
       const compiledJSON = JSON.parse(compiled);
       if (path in compiledJSON.sources) {
         if ('ast' in compiledJSON.sources[path]) {
           this.fileInfo[path] = {
+            content: sources.content,
             ast: compiledJSON.sources[path].ast,
             sourceMapping: new remixAST.SourceMappings(solidityStr)
           };
@@ -56,7 +118,7 @@ export class LspManager {
       return compiledJSON;
     } catch (err) {
       // FIXME: fill in something more meaningful
-      console.log(err);
+      logger.log(err);
       return {};
     }
   }
@@ -66,7 +128,7 @@ export class LspManager {
       const finfo = this.fileInfo[path];
       return getDefinition(finfo, selection);
     } else {
-      console.log(`Information about ${path} not found`);
+      this.config.logger.log(`Information about ${path} not found`);
     }
     return null;
   }
@@ -76,7 +138,7 @@ export class LspManager {
       const finfo = this.fileInfo[path];
       return getTypeDefinition(finfo, selection);
     } else {
-      console.log(`Information about ${path} not found`);
+      this.config.logger.log(`Information about ${path} not found`);
     }
     return null;
   }

@@ -26,6 +26,14 @@ export function getTypeDefinition(finfo: any, selection: LineColRange): any {
   return null;
 }
 
+/* For now, we will say a signature is just the same as getting the
+   type definition. To distingush between the two, use the returned
+   node's "referencedDeclaration" attribute and check that its
+   nodeType is "EventDefintion" or "FunctionDefinition".
+*/
+export const getSignature = getTypeDefinition;
+
+
 export function getDefinition(finfo: any, selection: LineColRange): any {
   const sm = finfo.sourceMapping;
   const solcLocation = rangeToLspPosition(selection, sm.lineBreaks)
