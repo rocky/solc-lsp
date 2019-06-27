@@ -1,11 +1,11 @@
 import tape from "tape";
-import { lspPositionToOffset, rangeToLspPosition } from "../out";
-import { LineColPosition, Location } from "../out/types";
+import { offsetFromLineColPosition, solcRangeFromLineColRange } from "../src";
+import { LineColPosition, SolcRange } from "../src/solc-ast/types";
 
 tape("helper", (t: tape.Test) => {
   const lineBreaks = [24, 25, 26, 47, 48, 80, 81, 111, 139,
     145, 146, 172, 210, 221, 227];
-  t.test("lspPositionToOffset", (st: tape.Test) => {
+  t.test("offsetFromLineColPosition", (st: tape.Test) => {
     // FIXME: Tuples are the right thing to use here.
     let pos: LineColPosition | number;
     let expect: number | LineColPosition;
@@ -23,17 +23,17 @@ tape("helper", (t: tape.Test) => {
         character: 0
       }, -1]
     ]) {
-      const got = lspPositionToOffset(<LineColPosition>pos, lineBreaks);
+      const got = offsetFromLineColPosition(<LineColPosition>pos, lineBreaks);
       st.equal(got, expect, `expect: ${expect}, got offset: ${got}`);
     }
     pos = <LineColPosition>{
       line: 1000,
       character: 1
     };
-    st.ok(isNaN(lspPositionToOffset(pos, lineBreaks)), "too high offset gives NaN");
+    st.ok(isNaN(offsetFromLineColPosition(pos, lineBreaks)), "too high offset gives NaN");
     st.end();
   });
-  t.test("rangeToLspPosition", (st: tape.Test) => {
+  t.test("solcRangeFromLineColRange", (st: tape.Test) => {
     const range = {
       start: {
         line: 9,
@@ -52,9 +52,9 @@ tape("helper", (t: tape.Test) => {
         character: 8
       }
     };
-    const srcPosition = rangeToLspPosition(range, lineBreaks)
+    const srcPosition = solcRangeFromLineColRange(range, lineBreaks)
     st.deepEqual(srcPosition,
-      <Location>{ start: 120, length: 5, file: 0 });
+      <SolcRange>{ start: 120, length: 5, fileIndex: 0 });
     st.end();
   });
 

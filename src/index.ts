@@ -1,6 +1,5 @@
 "use strict";
 
-export * from "./astFns";
-export * from "./lspManager";
+export * from "./ast-fns";
+export * from "./lsp-manager";
 export * from "./helper";
-export * from "./types";

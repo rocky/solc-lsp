@@ -5,10 +5,9 @@ import { statSync, readFileSync } from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const solc = require("solc");
-const remixAST = require("../node_modules/remix-astwalker/dist");
 
-import { getDefinition, getTypeDefinition } from "./astFns";
-import { LineColRange } from "./types";
+import { getDefinition, getTypeDefinition } from "./ast-fns";
+import { LineColRange, SourceMappings } from "./solc-ast";
 
 /* Here we have barebones configuration.
 */
@@ -111,7 +110,7 @@ export class LspManager {
           this.fileInfo[path] = {
             content: sources.content,
             ast: compiledJSON.sources[path].ast,
-            sourceMapping: new remixAST.SourceMappings(solidityStr)
+            sourceMapping: new SourceMappings(solidityStr)
           };
         }
       }

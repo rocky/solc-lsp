@@ -1,8 +1,9 @@
-import { LineColPosition, LineColRange, Location } from "../node_modules/remix-astwalker/dist/types";
+import { LineColPosition, LineColRange, SolcRange } from "./solc-ast";
 
 export declare type LineBreaks = Array<number>;
 
-export function lspPositionToOffset(position: LineColPosition, lineBreakPositions: LineBreaks): number {
+/* Note: this assumes 1-origin lineColPosition's  */
+export function offsetFromLineColPosition(position: LineColPosition, lineBreakPositions: LineBreaks): number {
   let lineOffset = 0;
   if (position.line > 1) {
     lineOffset = lineBreakPositions[position.line - 2] + 2;
@@ -10,13 +11,13 @@ export function lspPositionToOffset(position: LineColPosition, lineBreakPosition
   return lineOffset + position.character - 1;
 }
 
-export function rangeToLspPosition(range: LineColRange, lineBreakPositions: LineBreaks, file = 0): Location {
-  const start = lspPositionToOffset(range.start, lineBreakPositions);
-  const endOffset = lspPositionToOffset(range.end, lineBreakPositions);
+export function solcRangeFromLineColRange(range: LineColRange, lineBreakPositions: LineBreaks, fileIndex = 0): SolcRange {
+  const start = offsetFromLineColPosition(<LineColPosition>range.start, lineBreakPositions);
+  const endOffset = offsetFromLineColPosition(<LineColPosition>range.end, lineBreakPositions);
   const length = endOffset - start;
-  return <Location>{
+  return <SolcRange>{
     start,
     length,
-    file,
+    fileIndex,
   };
 }
