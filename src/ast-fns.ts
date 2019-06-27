@@ -19,7 +19,7 @@ export function indexNodes(finfo: any) {
 export function getTypeDefinition(finfo: any, selection: LineColRange): any {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
-  const node = sm.findNodeAtSourceLocation(null, solcLocation, finfo.ast);
+  const node = sm.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
   if (node && ("typeDescriptions" in node)) {
     return node;
   }
@@ -37,7 +37,7 @@ export const getSignature = getTypeDefinition;
 export function getDefinition(finfo: any, selection: LineColRange): any {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
-  const node = finfo.sourceMapping.findNodeAtSourceLocation(null, solcLocation, finfo.ast);
+  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
   if (node && "referencedDeclaration" in node) {
     if (!('id2node' in finfo)) indexNodes(finfo);
     return finfo.id2node[node.referencedDeclaration];

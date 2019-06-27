@@ -69,7 +69,6 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    debugger;
     const sources = {
       [path]: {
         // Content field is what solc uses. The other fields we have here should be ignored.
@@ -106,10 +105,11 @@ export class LspManager {
     try {
       const compiledJSON = JSON.parse(compiled);
       if (path in compiledJSON.sources) {
+        const sourceInfo = compiledJSON.sources[path];
         if ('ast' in compiledJSON.sources[path]) {
           this.fileInfo[path] = {
-            content: sources.content,
-            ast: compiledJSON.sources[path].ast,
+            content: solidityStr,
+            ast: sourceInfo.ast,
             sourceMapping: new SourceMappings(solidityStr)
           };
         }
