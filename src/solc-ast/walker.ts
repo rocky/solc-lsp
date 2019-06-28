@@ -13,10 +13,16 @@ export declare interface SolcAstWalker {
  *
  * @param ast  - AST node
 
- * event('node', <Node Type | false>) will be fired for every node of type <Node Type>.
- * event('node', "*") will be fired for all other nodes.
- * in each case, if the event emits false it does not descend into children.
- * If no event for the current type, children are visited.
+ * This an also be used as an EventEmitter. Here, you would register the
+ * callback listener node with a single node parameter like this:
+ *
+ *   const listener = function listener(node) {  ... }
+ *
+ * then create add this to an instance of this class:
+ *
+ *   const astWalker = new SolcAstWalker();
+ *   astWalker.addListener("node", listener);
+ *
  */
 
 export class SolcAstWalker extends EventEmitter {
