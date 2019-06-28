@@ -34,8 +34,14 @@ export class SolcAstWalker extends EventEmitter {
       this.emit("node", ast);
       callback(ast);
       for (let k of Object.keys(ast)) {
-        // Possible optimization:
-        // if (k in ['id', 'src', 'nodeType']) continue;
+        if ([
+          // All AST nodes have these
+          "id", "src", "nodeType",
+
+          // These are known not to be fields of an AST node
+          "operator", "type", "constant", "name", "absolutePath"
+	      ].includes(k))
+          continue;
         const astItem = ast[k];
         if (Array.isArray(astItem)) {
           for (let child of astItem) {
