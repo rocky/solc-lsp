@@ -145,22 +145,29 @@ export class SourceMappings {
   findNodeAtSourceSolcRange(astNodeType: string | undefined, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | null {
     const astWalker = new SolcAstWalker()
     let found: SolcAstNode | null = null;
-    /* FIXME: Looking at AST walker code,
-       I don't understand a need to return a boolean. */
+
     const callback = function(node: SolcAstNode) {
       let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
       if (nodeSolcRange &&
-        nodeSolcRange.start == sourceSolcRange.start &&
-        nodeSolcRange.length == sourceSolcRange.length) {
+          nodeSolcRange.start == sourceSolcRange.start &&
+          nodeSolcRange.length == sourceSolcRange.length) {
         if (astNodeType == undefined || astNodeType === node.nodeType) {
-          found = node;
+          throw node;
         }
       }
-      return true;
     }
 
-    astWalker.walk(ast, callback);
-    return found;
+    try {
+      astWalker.walk(ast, callback);
+    } catch(e) {
+      if (isSolcAstNode(e)) {
+        return e;
+      } else {
+        // Not ours. Reraise.
+        throw e;
+      }
+    }
+    return null;
   }
 
   /**

@@ -23,7 +23,7 @@ tape("SolcASTWalker", (t: tape.Test) => {
 
 	astWalker.walk(ast, (node: SolcAstNode) => {
 	    if (count % 20 == 0) {
-		st.ok(isSolcAstNode(node), "passed an ast node");
+		st.ok(isSolcAstNode(node), "passed an solc AST node");
 	    }
 	    count += 1;
 	});
