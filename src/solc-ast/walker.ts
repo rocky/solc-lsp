@@ -46,7 +46,7 @@ export class SolcAstWalker extends EventEmitter {
 
   // Normalizes parameter callback and calls walkInternal
   walk(ast: SolcAstNode, callback: any) {
-    if (!isSolcAstNode(ast)) throw new TypeError("first argument should be a solc ast");
+    if (!isSolcAstNode(ast)) throw new TypeError("First argument should be a solc AST");
     return this.walkInternal(ast, callback);
   }
 }
