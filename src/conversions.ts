@@ -1,3 +1,5 @@
+/* Position conversion functions */
+
 import { LineColPosition, LineColRange, SolcRange } from "./solc-ast";
 
 export declare type LineBreaks = Array<number>;

@@ -1,8 +1,8 @@
 import tape from "tape";
-import { offsetFromLineColPosition, solcRangeFromLineColRange } from "../src";
+import { offsetFromLineColPosition, solcRangeFromLineColRange } from "..";
 import { LineColPosition, SolcRange } from "../src/solc-ast/types";
 
-tape("helper", (t: tape.Test) => {
+tape("conversions", (t: tape.Test) => {
   const lineBreaks = [24, 25, 26, 47, 48, 80, 81, 111, 139,
     145, 146, 172, 210, 221, 227];
   t.test("offsetFromLineColPosition", (st: tape.Test) => {

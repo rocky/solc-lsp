@@ -1,9 +1,9 @@
 import tape from "tape";
-const fs = require('fs');
-const remixAST = require("../node_modules/remix-astwalker/dist");
+const fs = require("fs");
+import { SourceMappings } from "../out/solc-ast";
 import { getDefinition, getTypeDefinition } from "../out";
 
-tape("helper", (t: tape.Test) => {
+tape("conversion", (t: tape.Test) => {
   const solidityAst = __dirname + '/resources/ast.json';
   const ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
   const solidityFile = __dirname + '/resources/token-good.sol';
@@ -11,7 +11,7 @@ tape("helper", (t: tape.Test) => {
 
   const finfo = {
     ast: ast,
-    sourceMapping: new remixAST.SourceMappings(solidityStr)
+    sourceMapping: new SourceMappings(solidityStr)
   };
 
   t.test("AstFns", (st: tape.Test) => {

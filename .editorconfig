@@ -1,3 +1,4 @@
+# Coding-style configuration. See https://editorconfig.org
 root = true
 
 [*]
@@ -8,19 +9,19 @@ charset = utf-8
 indent_style = space
 indent_size = 2
 
-[./lib/*.js]
-trim_trailing_whitespace = true
-insert_final_newline = true
-indent_style = space
-indent_size = 2
-
-[{.,./lib}/*.js]
+[./{src,tests}/*.ts]
 trim_trailing_whitespace = true
 insert_final_newline = true
 indent_style = space
 indent_size = 2
 
 # npm inserts a final newline.
-[package.json]
+[package.json,travis.yml]
 insert_final_newline = true
 trim_trailing_whitespace = false
+indent_style = space
+indent_size = 4
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab

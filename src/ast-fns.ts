@@ -1,9 +1,10 @@
+/* solc AST functions generally in support of LSP-like things */
+
+import { LineColRange, SolcAstWalker } from "./solc-ast";
+import { solcRangeFromLineColRange } from "./conversions";
+
 // Store a list of declarations by index key.
 // import { Location } from "../node_modules/remix-astwalker/dist/types";
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import { LineColRange, SolcAstWalker } from "./solc-ast";
-import { solcRangeFromLineColRange } from "./helper";
 
 /* FIXME: can we make this async? */
 export function indexNodes(finfo: any) {
@@ -16,6 +17,12 @@ export function indexNodes(finfo: any) {
   finfo.id2node = id2node;
 }
 
+/*
+  See:
+  https://microsoft.github.io/language-server-protocol/specification#textDocument_typeDefinition
+
+  for what we are trying to support.
+*/
 export function getTypeDefinition(finfo: any, selection: LineColRange): any {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
@@ -26,6 +33,11 @@ export function getTypeDefinition(finfo: any, selection: LineColRange): any {
   return null;
 }
 
+/*
+  See:
+  https://microsoft.github.io/language-server-protocol/specification#textDocument_signatureHelp
+  for what we are trying to support.
+*/
 /* For now, we will say a signature is just the same as getting the
    type definition. To distingush between the two, use the returned
    node's "referencedDeclaration" attribute and check that its
@@ -34,6 +46,11 @@ export function getTypeDefinition(finfo: any, selection: LineColRange): any {
 export const getSignature = getTypeDefinition;
 
 
+/*
+  See:
+  https://microsoft.github.io/language-server-protocol/specification#textDocument_declaration
+  for what we are trying to support.
+*/
 export function getDefinition(finfo: any, selection: LineColRange): any {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
