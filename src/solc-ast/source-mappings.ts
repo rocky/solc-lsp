@@ -90,6 +90,51 @@ export function srcFromSourceSolcRange(l: SolcRange): string {
   return `${l.start}:${l.length}:${l.fileIndex}`;
 }
 
+type ASTNodeCallbackFn = (node: SolcAstNode) => void;
+
+/**
+ * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "null" if none found.
+ *
+ * @param astNodeType   nodeType that a found ASTNode must be. Use "null" if any ASTNode can match.
+ *                      FIXME: should this be a compare function?
+ * @param sourceSolcRange "src" location that the AST node must match.
+ * @param callback "callback" function that is called for each candidate AST node in the walk
+ * @param astWalker "walker routine to use"
+ */
+export function nodeAtSourceSolcRange(astNodeType: string | undefined,
+  sourceSolcRange: SolcRange, ast: SolcAstNode,
+  callback?: ASTNodeCallbackFn,
+  astWalker?: SolcAstWalker): SolcAstNode | null {
+  if (!astWalker) {
+    astWalker = new SolcAstWalker();
+  }
+
+  if (!callback) {
+    callback = function(node: SolcAstNode) {
+      let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
+      if (nodeSolcRange &&
+        nodeSolcRange.start == sourceSolcRange.start &&
+        nodeSolcRange.length == sourceSolcRange.length) {
+        if (astNodeType == undefined || astNodeType === node.nodeType) {
+          throw node;
+        }
+      }
+    }
+  }
+
+  try {
+    astWalker.walk(ast, callback);
+  } catch (e) {
+    if (isSolcAstNode(e)) {
+      return e;
+    } else {
+      // Not ours. Reraise.
+      throw e;
+    }
+  }
+  return null;
+}
+
 /**
  * Routines for retrieving solc AST object(s) using some criteria, usually
  * includng "src' information.
@@ -98,6 +143,8 @@ export class SourceMappings {
 
   readonly source: string;
   readonly lineBreaks: Array<number>;
+  ast?: SolcAstNode;
+  astWalker?: SolcAstWalker;
 
   constructor(source: string) {
     this.source = source;
@@ -138,36 +185,26 @@ export class SourceMappings {
 
   /**
    * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "null" if none found.
+   * FIXME: should we allow a boolean compare function?
    *
    * @param astNodeType   nodeType that a found ASTNode must be. Use "null" if any ASTNode can match.
    * @param sourceSolcRange "src" location that the AST node must match.
+   * @param ast "Ast we are searching" FIXME: pull out of cache
    */
   findNodeAtSourceSolcRange(astNodeType: string | undefined, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | null {
-    const astWalker = new SolcAstWalker()
-    let found: SolcAstNode | null = null;
-
+    /* FIXME: check cache for SolcRange here */
     const callback = function(node: SolcAstNode) {
+      /* FIXME: cache stuff here. */
       let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
       if (nodeSolcRange &&
-          nodeSolcRange.start == sourceSolcRange.start &&
-          nodeSolcRange.length == sourceSolcRange.length) {
+        nodeSolcRange.start == sourceSolcRange.start &&
+        nodeSolcRange.length == sourceSolcRange.length) {
         if (astNodeType == undefined || astNodeType === node.nodeType) {
           throw node;
         }
       }
     }
-
-    try {
-      astWalker.walk(ast, callback);
-    } catch(e) {
-      if (isSolcAstNode(e)) {
-        return e;
-      } else {
-        // Not ours. Reraise.
-        throw e;
-      }
-    }
-    return null;
+    return nodeAtSourceSolcRange(astNodeType, sourceSolcRange, ast, callback);
   }
 
   /**
