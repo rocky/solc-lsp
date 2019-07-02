@@ -4,13 +4,14 @@ import { LineColPosition, LineColRange, SolcRange } from "./solc-ast";
 
 export declare type LineBreaks = Array<number>;
 
-/* Note: this assumes 1-origin lineColPosition's  */
-export function offsetFromLineColPosition(position: LineColPosition, lineBreakPositions: LineBreaks): number {
+/* Note: the default is 1-origin line and column lineColPosition's  */
+export function offsetFromLineColPosition(position: LineColPosition, lineBreakPositions: LineBreaks,
+  origin: number = 1): number {
   let lineOffset = 0;
-  if (position.line > 1) {
-    lineOffset = lineBreakPositions[position.line - 2] + 2;
+  if (position.line > origin) {
+    lineOffset = lineBreakPositions[position.line - (1 + origin)] + (1 + origin);
   }
-  return lineOffset + position.character - 1;
+  return lineOffset + position.character - origin;
 }
 
 export function solcRangeFromLineColRange(range: LineColRange, lineBreakPositions: LineBreaks, fileIndex = 0): SolcRange {

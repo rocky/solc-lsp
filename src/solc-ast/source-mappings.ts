@@ -207,6 +207,19 @@ export class SourceMappings {
     return nodeAtSourceSolcRange(astNodeType, sourceSolcRange, ast, callback);
   }
 
+  /*
+     Turn a Line Column position into a (solc) Offset.
+     Note: this is 0 origin line and column LineColPosition.
+     FIXME: memoize.
+   */
+  offsetFromLineColPosition(position: LineColPosition): number {
+    let lineOffset = 0;
+    if (position.line > 0) {
+      lineOffset = this.lineBreaks[position.line - 1];
+    }
+    return lineOffset + position.character;
+  }
+
   /**
    * Retrieve the line/column range position for the given source-mapping string.
    *
