@@ -19,7 +19,7 @@ type LineBreaks = Array<number>;
 
   Code copied from remix-lib/util.js
 */
-function findLowerBound(target: number, array: Array<number>): number {
+export function findLowerBound(target: number, array: Array<number>): number {
   var start = 0
   var length = array.length
   while (length > 0) {

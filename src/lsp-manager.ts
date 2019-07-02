@@ -8,6 +8,7 @@ const solc = require("solc");
 
 import { getDefinition, getTypeDefinition } from "./ast-fns";
 import { LineColRange, SourceMappings } from "./solc-ast";
+import { StaticInfo } from "./gather-info";
 
 /* Here we have barebones configuration.
 */
@@ -110,7 +111,8 @@ export class LspManager {
           this.fileInfo[path] = {
             content: solidityStr,
             ast: sourceInfo.ast,
-            sourceMapping: new SourceMappings(solidityStr)
+            sourceMapping: new SourceMappings(solidityStr),
+            staticInfo: new StaticInfo(sourceInfo.ast)
           };
         }
       }
