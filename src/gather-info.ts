@@ -22,6 +22,13 @@ export interface StartListMap {
 }
 
 /*
+   For caching offset to astNodes.
+*/
+export interface offsetAstNodeMap {
+  [startOffset: number]: SolcAstNode;
+}
+
+/*
 A StartList is used to find a range that closest encompases a position.
 To use it, look in "starts" for the closet start offset before the postion.
 Then using that adjusted offset, find both the node id and the
@@ -48,6 +55,7 @@ export class StaticInfo {
   startOffset: StartList = {
     list: [],
     starts: [],
+    // cache: offsetAstNodeMap
   };
   solcIds: SolcIdMap = {};
   // defs: SolcIdMap; /* For an Id which is a def, where are the use ids */
@@ -79,15 +87,21 @@ export class StaticInfo {
       .map(x => parseInt(x, 10)).sort(function(a, b) { return a - b });
   }
 
-  /* Find an AST node that is closest to offset */
+  /* Find an AST node that is closest to offset and if there are several
+     at the offset, get the one with the smallest length.
+     FIXME: generalize to other conditions other than say length.
+   */
   offsetToAstNode(offset: number): SolcAstNode | null {
     const starts = this.startOffset.starts;
     let lb = findLowerBound(offset, starts);
     if (lb < 0) lb = 0;
     const startOffset = starts[lb];
     if (this.startOffset.list[startOffset]) {
-      // FIXME: add min so that [0] is the smallest range.
-      return this.solcIds[this.startOffset.list[startOffset][0].id]
+      // Here we use smallest length, but we might parameterize or pass a condition to look for.
+      const minTup = this.startOffset.list[startOffset].reduce((minTup, tup) => minTup.length < tup.length ? minTup : tup);
+      const astNode = this.solcIds[minTup.id];
+      // this.startOffset.cache[offset] = astNode;
+      return astNode;
     }
     return null;
   }

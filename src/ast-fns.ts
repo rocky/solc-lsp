@@ -1,7 +1,8 @@
 /* solc AST functions generally in support of LSP-like things */
 
-import { LineColRange, SolcAstWalker } from "./solc-ast";
+import { LineColRange, SolcAstNode, SolcAstWalker } from "./solc-ast";
 import { solcRangeFromLineColRange } from "./conversions";
+import { StaticInfo } from "./gather-info";
 
 // Store a list of declarations by index key.
 // import { Location } from "../node_modules/remix-astwalker/dist/types";
@@ -23,7 +24,7 @@ export function indexNodes(finfo: any) {
 
   for what we are trying to support.
 */
-export function getTypeDefinition(finfo: any, selection: LineColRange): any {
+export function getTypeDefinition(finfo: any, selection: LineColRange): SolcAstNode | null {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
   const node = sm.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
@@ -45,6 +46,19 @@ export function getTypeDefinition(finfo: any, selection: LineColRange): any {
 */
 export const getSignature = getTypeDefinition;
 
+
+/*
+  See:
+  https://microsoft.github.io/language-server-protocol/specification#textDocument_declaration
+  for what we are trying to support.
+*/
+export function getDefinitionNodeFromSolcNode(staticInfo: StaticInfo,
+					      node: SolcAstNode): SolcAstNode | null {
+    if (node && "referencedDeclaration" in node) {
+	return staticInfo.solcIds[node.referencedDeclaration];
+    }
+    return null;
+}
 
 /*
   See:

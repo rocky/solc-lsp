@@ -25,10 +25,10 @@ tape("SourceMappings", (t: tape.Test) => {
 	    fileIndex: 0
 	};
 
-	st.deepEqual(lineColPositionFromOffset(0, srcMappings.lineBreaks),
+	st.deepEqual(lineColPositionFromOffset(0, srcMappings.lineBreaks, 1, 1),
 		     <LineColPosition>{ line: 1, character: 1 },
 		     "lineColPositionFromOffset degenerate case");
-	st.deepEqual(lineColPositionFromOffset(200, srcMappings.lineBreaks),
+	st.deepEqual(lineColPositionFromOffset(200, srcMappings.lineBreaks, 1, 1),
 		     <LineColPosition>{ line: 17, character: 1 },
 		     "lineColPositionFromOffset conversion");
 

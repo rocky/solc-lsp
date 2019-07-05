@@ -40,15 +40,16 @@ export function findLowerBound(target: number, array: Array<number>): number {
  *
  * @param offset  The character offset to convert.
  */
-export function lineColPositionFromOffset(offset: number, lineBreaks: LineBreaks): LineColPosition {
+export function lineColPositionFromOffset(offset: number, lineBreaks: LineBreaks,
+					  lineOrigin: number, colOrigin: number): LineColPosition {
   let line: number = findLowerBound(offset, lineBreaks);
   if (lineBreaks[line] !== offset) {
     line += 1;
   }
   const beginColumn = line === 0 ? 0 : (lineBreaks[line - 1] + 1);
   return <LineColPosition>{
-    line: line + 1,
-    character: (offset - beginColumn) + 1
+    line: line + lineOrigin,
+    character: (offset - beginColumn) + colOrigin
   }
 }
 
@@ -225,12 +226,25 @@ export class SourceMappings {
    *
    * @param src  Solc "src" object containing attributes {source} and {length}.
    */
-  lineColumnRangeFromSrc(src: string): LineColRange {
-    const sourceSolcRange = sourceSolcRangeFromSrc(src);
-    if (sourceSolcRange.start >= 0 && sourceSolcRange.length >= 0) {
+  lineColRangeFromSrc(src: string, lineOrigin: number, colOrigin: number): LineColRange {
+    const solcRange = sourceSolcRangeFromSrc(src);
+    return this.lineColRangeFromSolcRange(solcRange, this.lineBreaks, lineOrigin, colOrigin)
+  }
+
+  /**
+   * Retrieve the line/column range position for the given solcRange.
+   *
+   * @param solcRange the object containing attributes {source} and {length}.
+   */
+  lineColRangeFromSolcRange(solcRange: SolcRange, lineBreakPositions: LineBreaks,
+			      lineOrigin: number, colOrigin: number): LineColRange {
+
+    if (solcRange.start >= 0 && solcRange.length >= 0) {
       return <LineColRange>{
-        start: lineColPositionFromOffset(sourceSolcRange.start, this.lineBreaks),
-        end: lineColPositionFromOffset(sourceSolcRange.start + sourceSolcRange.length, this.lineBreaks)
+          start: lineColPositionFromOffset(solcRange.start, this.lineBreaks, lineOrigin,
+					   colOrigin),
+        end: lineColPositionFromOffset(solcRange.start + solcRange.length, this.lineBreaks,
+                                       lineOrigin, colOrigin)
       }
     } else {
       return <LineColRange>{
@@ -239,5 +253,7 @@ export class SourceMappings {
       }
     }
   }
+
+
 
 }
