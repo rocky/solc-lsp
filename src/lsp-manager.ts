@@ -96,6 +96,12 @@ export class LspManager {
       }, ...options.solcStandardInput
     };
 
+    if (solc.version() >= '0.5.10' &&
+      !solcStandardInput.settings.parserErrorRecovery) {
+      // Set for extended errors
+      solcStandardInput.settings.parserErrorRecovery = true;
+    }
+
     let compiled: any;
     try {
       compiled = solc.compile(JSON.stringify(solcStandardInput), getImports);
