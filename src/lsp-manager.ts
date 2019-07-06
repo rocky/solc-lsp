@@ -6,7 +6,7 @@ import { statSync, readFileSync } from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const solc = require("solc");
 
-import { getDefinition, getTypeDefinition, getDefinitionNodeFromSolcNode } from "./ast-fns";
+import { getDefinition, getTypeDefinition } from "./ast-fns";
 import { LineColPosition, LineColRange, SolcAstNode, SourceMappings } from "./solc-ast";
 import { StaticInfo } from "./gather-info";
 
@@ -131,14 +131,14 @@ export class LspManager {
   }
 
   solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition
-			     ): [any, SolcAstNode] | null {
-      if (!(filePath in this.fileInfo)) {
-	  return null;
-      }
-      const finfo = this.fileInfo[filePath];
-      const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
-      return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
+  ): [any, SolcAstNode] | null {
+    if (!(filePath in this.fileInfo)) {
+      return null;
     }
+    const finfo = this.fileInfo[filePath];
+    const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
+    return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
+  }
 
   gotoDefinition(path: string, selection: LineColRange) {
     if (path in this.fileInfo) {

@@ -41,7 +41,7 @@ export function findLowerBound(target: number, array: Array<number>): number {
  * @param offset  The character offset to convert.
  */
 export function lineColPositionFromOffset(offset: number, lineBreaks: LineBreaks,
-					  lineOrigin: number, colOrigin: number): LineColPosition {
+  lineOrigin: number, colOrigin: number): LineColPosition {
   let line: number = findLowerBound(offset, lineBreaks);
   if (lineBreaks[line] !== offset) {
     line += 1;
@@ -102,7 +102,7 @@ type ASTNodeCallbackFn = (node: SolcAstNode) => void;
  * @param callback "callback" function that is called for each candidate AST node in the walk
  * @param astWalker "walker routine to use"
  */
-export function nodeAtSourceSolcRange(astNodeType: string | undefined,
+export function nodeAtSourceSolcRange(astNodeType: string | null,
   sourceSolcRange: SolcRange, ast: SolcAstNode,
   callback?: ASTNodeCallbackFn,
   astWalker?: SolcAstWalker): SolcAstNode | null {
@@ -192,7 +192,7 @@ export class SourceMappings {
    * @param sourceSolcRange "src" location that the AST node must match.
    * @param ast "Ast we are searching" FIXME: pull out of cache
    */
-  findNodeAtSourceSolcRange(astNodeType: string | undefined, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | null {
+  findNodeAtSourceSolcRange(astNodeType: string | null, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | null {
     /* FIXME: check cache for SolcRange here */
     const callback = function(node: SolcAstNode) {
       /* FIXME: cache stuff here. */
@@ -237,14 +237,14 @@ export class SourceMappings {
    * @param solcRange the object containing attributes {source} and {length}.
    */
   lineColRangeFromSolcRange(solcRange: SolcRange, lineBreakPositions: LineBreaks,
-			      lineOrigin: number, colOrigin: number): LineColRange {
+    lineOrigin: number, colOrigin: number): LineColRange {
 
     if (solcRange.start >= 0 && solcRange.length >= 0) {
       return <LineColRange>{
-          start: lineColPositionFromOffset(solcRange.start, this.lineBreaks, lineOrigin,
-					   colOrigin),
+        start: lineColPositionFromOffset(solcRange.start, this.lineBreaks, lineOrigin,
+          colOrigin),
         end: lineColPositionFromOffset(solcRange.start + solcRange.length, this.lineBreaks,
-                                       lineOrigin, colOrigin)
+          lineOrigin, colOrigin)
       }
     } else {
       return <LineColRange>{

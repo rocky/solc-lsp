@@ -46,10 +46,15 @@ export interface SolcIdMap {
   [id: number]: SolcAstNode;
 }
 
-/* List of "id"s. These have some common property, like they are
- a list of definitions, or uses of a particular identifier (and scope)
+/* List of "ASTs"s. These have some common property, like they are
+ a list ofuses for a particular identifier (and scope)
 */
-export type IdList = Array<number>;
+export type SolcAstList = Array<SolcAstNode>;
+
+/* Maps a solc "id" field into  a list of SolcASTNodes */
+export interface SolcIdMapList {
+  [id: number]: SolcAstList;
+}
 
 export class StaticInfo {
   startOffset: StartList = {
@@ -57,8 +62,19 @@ export class StaticInfo {
     starts: [],
     // cache: offsetAstNodeMap
   };
+
+  /* Retrive a solc AST node for a given
+   *  id. Object.keys(x.solcIds).sort() is generally contains the nmbers
+   *  from 0 to the number of nodes into of the AST */
   solcIds: SolcIdMap = {};
-  // defs: SolcIdMap; /* For an Id which is a def, where are the use ids */
+
+  /* Retrive a list solc AST nodes id for a given
+   *  id. Object.keys(solcIds).sort() is generally the ids of
+   *  declaration nodes, And Object.values(x.id2uses) are AST nodes of
+   *  identifiers. If the ref is a local variable then its uses will
+   *  all have the same scope value or a nested scope value. */
+
+  id2uses: SolcIdMap = {};  // Object.keys(Retrive a solc AST node id for a given id
 
   constructor(ast: SolcAstNode) {
     this.gatherInfo(ast);
@@ -76,9 +92,13 @@ export class StaticInfo {
         id: node.id
       });
     this.solcIds[node.id] = node;
+    if ("referencedDeclaration" in node) {
+      this.id2uses[node.refDeclaration] = node;
+    }
   }
 
   /* Collect AST information in a way to make LSP functions easy.
+     FIXME: can we make this async?
    */
   gatherInfo(ast: SolcAstNode) {
     const astWalker = new SolcAstWalker();

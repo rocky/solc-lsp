@@ -1,4 +1,4 @@
-.PHONY: check
+.PHONY: check test
 
 # Note: most things are just npm and the target name
 
@@ -6,6 +6,8 @@
 check:
 	npm test
 
+test: check
+
 #: Compile typescript to javascript
 build:
-	npm build
+	tsc --build
