@@ -24,7 +24,7 @@ export interface SolcFileInfo {
 export function indexNodes(finfo: SolcFileInfo) {
   const id2node = {};
   const astWalker = new SolcAstWalker();
-  const callback = function(node: any) {
+  const callback = function(node: SolcAstNode) {
     id2node[node.id] = node;
   }
   astWalker.walk(finfo.ast, callback);
@@ -104,4 +104,12 @@ export function getReferencesFromSolcNode(staticInfo: StaticInfo,
     return staticInfo.id2uses[declNode.id];
   }
   return null;
+}
+
+export function getReferences(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | null {
+  const sm = finfo.sourceMapping;
+  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
+  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
+  if (node === null) return null;
+  return getReferencesFromSolcNode(finfo.staticInfo, node);
 }

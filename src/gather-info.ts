@@ -74,7 +74,7 @@ export class StaticInfo {
    *  identifiers. If the ref is a local variable then its uses will
    *  all have the same scope value or a nested scope value. */
 
-  id2uses: SolcIdMap = {};  // Object.keys(Retrive a solc AST node id for a given id
+  id2uses: SolcIdMapList = {};  // Object.keys(Retrive a solc AST node id for a given id
 
   constructor(ast: SolcAstNode) {
     this.gatherInfo(ast);
@@ -93,7 +93,14 @@ export class StaticInfo {
       });
     this.solcIds[node.id] = node;
     if ("referencedDeclaration" in node) {
-      this.id2uses[node.refDeclaration] = node;
+      const declId = node.referencedDeclaration;
+      if (declId !== null) {
+        if (declId in this.id2uses) {
+          this.id2uses[declId].push(node);
+        } else {
+          this.id2uses[declId] = [node];
+        }
+      }
     }
   }
 

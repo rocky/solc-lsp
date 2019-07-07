@@ -228,7 +228,7 @@ export class SourceMappings {
    */
   lineColRangeFromSrc(src: string, lineOrigin: number, colOrigin: number): LineColRange {
     const solcRange = sourceSolcRangeFromSrc(src);
-    return this.lineColRangeFromSolcRange(solcRange, this.lineBreaks, lineOrigin, colOrigin)
+    return this.lineColRangeFromSolcRange(solcRange, lineOrigin, colOrigin)
   }
 
   /**
@@ -236,7 +236,7 @@ export class SourceMappings {
    *
    * @param solcRange the object containing attributes {source} and {length}.
    */
-  lineColRangeFromSolcRange(solcRange: SolcRange, lineBreakPositions: LineBreaks,
+  lineColRangeFromSolcRange(solcRange: SolcRange,
     lineOrigin: number, colOrigin: number): LineColRange {
 
     if (solcRange.start >= 0 && solcRange.length >= 0) {
