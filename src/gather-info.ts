@@ -124,8 +124,23 @@ export class StaticInfo {
     if (lb < 0) lb = 0;
     const startOffset = starts[lb];
     if (this.startOffset.list[startOffset]) {
-      // Here we use smallest length, but we might parameterize or pass a condition to look for.
-      const minTup = this.startOffset.list[startOffset].reduce((minTup, tup) => minTup.length < tup.length ? minTup : tup);
+      /* We want smallest length for this start address, that covers
+	 the range.  But this can be subtle. Consider:
+
+	 address owner = msg.sender;
+	 ^^^^^^^ type name
+	 ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
+                   ^ we want info about here
+
+         Taking the shortest string that starts at the beginning of
+	 the line (here, a type name) is wrong. We also need to check
+	 that it also spans where we are inside the variable
+	 declaration.
+      */
+      // TODO: parameterize or pass a condition to look for?
+      const minTup = this.startOffset.list[startOffset]
+        .reduce((minTup, tup) =>
+          (minTup.length >= tup.length && (startOffset + tup.length >= offset) ? tup : minTup));
       const astNode = this.solcIds[minTup.id];
       // this.startOffset.cache[offset] = astNode;
       return astNode;

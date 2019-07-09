@@ -2,7 +2,7 @@
 
 import { LineColRange, SolcAstNode, SolcAstWalker, SourceMappings } from "./solc-ast";
 import { solcRangeFromLineColRange } from "./conversions";
-import { StaticInfo } from "./gather-info";
+import { SolcAstList, StaticInfo } from "./gather-info";
 
 /* These are attributes of an AST node, which could
    include another AST node
@@ -97,16 +97,19 @@ export function getDefinition(finfo: SolcFileInfo, selection: LineColRange): Sol
   for what we are trying to support.
 */
 export function getReferencesFromSolcNode(staticInfo: StaticInfo,
-  node: SolcAstNode): any {
-  if (node && "referencedDeclaration" in node) {
-    const declNode = staticInfo.solcIds[node.referencedDeclaration];
-    if (declNode === null) return null;
-    return staticInfo.id2uses[declNode.id];
+  node: SolcAstNode): SolcAstList | null {
+  let declNode: SolcAstNode | null = null
+  if (node === null) return null;
+  if ("referencedDeclaration" in node) {
+    declNode = staticInfo.solcIds[node.referencedDeclaration];
+  } else if (["VariableDeclaration"].includes(node.nodeType)) {
+    declNode = node;
   }
-  return null;
+  if (declNode === null) return null;
+  return staticInfo.id2uses[declNode.id];
 }
 
-export function getReferences(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | null {
+export function getReferences(finfo: SolcFileInfo, selection: LineColRange): SolcAstList | null {
   const sm = finfo.sourceMapping;
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
   const node = finfo.sourceMapping.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
