@@ -1,4 +1,8 @@
-.PHONY: check test
+.PHONY: check test all
+
+#: "Build" this - really just an "npm install"
+all:
+	npm install
 
 # Note: most things are just npm and the target name
 
