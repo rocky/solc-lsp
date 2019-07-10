@@ -15,3 +15,7 @@ test: check
 #: Compile typescript to javascript
 build:
 	tsc --build
+
+#: clear out node_modules
+clean:
+	rm -fr node_modules

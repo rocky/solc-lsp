@@ -4,10 +4,8 @@ const fs = require("fs");
 import {
     SolcAstNode, isSolcAstNode,
     LineColPosition, lineColPositionFromOffset,
-    LineColRange, SolcRange,
     SourceMappings,
     sourceSolcRangeFromSolcAstNode,
-    sourceSolcRangeFromSrc, srcFromSourceSolcRange
 } from "../src/solc-ast";
 
 tape("SourceMappings", (t: tape.Test) => {
@@ -19,11 +17,6 @@ tape("SourceMappings", (t: tape.Test) => {
 
     t.test("SourceMappings conversions", (st: tape.Test) => {
 	// st.plan(10);
-	const loc = <SolcRange>{
-	    start: 32,
-	    length: 6,
-	    fileIndex: 0
-	};
 
 	st.deepEqual(lineColPositionFromOffset(0, srcMappings.lineBreaks, 1, 1),
 		     <LineColPosition>{ line: 1, character: 1 },
@@ -90,11 +83,11 @@ tape("SourceMappings", (t: tape.Test) => {
 	// st.plan(5);
 
 	const loc = { start: 413, length: 16, fileIndex: 0 };
-	let astNode = srcMappings.findNodeAtSourceSolcRange('ExpressionStatement', loc, ast);
+	const astNode: any = srcMappings.findNodeAtSourceSolcRange('ExpressionStatement', loc, ast);
 	st.ok(!!astNode, "findNodeAtSourceSolcRange should find something");
-	// st.ok(isSolcAstNode(astNode), "findsNodeAtSourceSolcRange finds something");
-	astNode = srcMappings.findNodeAtSourceSolcRange('NotARealThingToFind', loc, ast);
-	st.ok(!astNode, "findNodeAtSourceSolcRange should not find ASTnode");
+	st.ok(isSolcAstNode(astNode), "findsNodeAtSourceSolcRange finds something");
+	const astNode2 = srcMappings.findNodeAtSourceSolcRange('NotARealThingToFind', loc, ast);
+	st.ok(!astNode2, "findNodeAtSourceSolcRange should not find ASTnode");
 	/**
 	st.notOk(isSolcAstNode(astNode),
 		 "findsNodeAtSourceSolcRange fails to find something when it should");

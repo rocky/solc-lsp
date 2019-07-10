@@ -30,24 +30,26 @@ tape("SolcASTWalker", (t: tape.Test) => {
 	st.equal(count, astNodeCount, "traverses all AST nodes");
 	st.equal(count, listenCount, "listen called back for AST nodes");
 
-	astWalker.walk(ast, (node) => {
-	    //     count += 1;
-	    // });
-	    // console.log(count);
+	// astWalker.walk(ast, (node) => {
+	//     //     count += 1;
+	//     // });
+	//     // console.log(count);
+	//     st.ok(node);
 
-	    let badCall = function() {
-		/* Typescript will keep us from calling walkFull with a legacyAST.
-		   However, for non-typescript uses, we add this test which casts
-		   to an AST to check that there is a run-time check in walkFull.
-		*/
-		astWalker.walk(<SolcAstNode>{}, (node: SolcAstNode) => {
-		    count += 1;
-		});
-	    }
-	    //   t.throws(badCall, /first argument should be a solc AST/,
-	    //   "passing bad data fails");
-	    // st.equal(count, 0, "traverses no AST nodes");
-	});
+	//     let badCall = function() {
+	// 	/* Typescript will keep us from calling walkFull with a legacyAST.
+	// 	   However, for non-typescript uses, we add this test which casts
+	// 	   to an AST to check that there is a run-time check in walkFull.
+	// 	*/
+	// 	astWalker.walk(<SolcAstNode>{}, (node: SolcAstNode) => {
+	// 	    st.ok(node);
+	// 	    count += 1;
+	// 	});
+	//     }
+	//     t.throws(badCall, /first argument should be a solc AST/,
+	// 	     "passing bad data fails");
+	//     st.equal(count, 0, "traverses no AST nodes");
+	// });
 	st.end();
     });
 });

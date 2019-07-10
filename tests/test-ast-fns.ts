@@ -1,6 +1,6 @@
 import tape from "tape";
 const fs = require("fs");
-import { SourceMappings, SolcAstNode } from "../out/solc-ast";
+import { SourceMappings } from "../out/solc-ast";
 import { SolcFileInfo } from "../out/ast-fns";
 import { StaticInfo } from "../out/gather-info";
 import { getDefinition, getTypeDefinition } from "../out";
