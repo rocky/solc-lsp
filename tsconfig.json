@@ -13,6 +13,7 @@
 	"moduleResolution": "node",
         "lib": [
             "es6",
+            "es2016", /* Adds Array<string>.includes */
             "dom"
         ],
 	/* Strict Type-Checking Options */
