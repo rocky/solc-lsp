@@ -4,6 +4,8 @@
 {
     "compilerOptions": {
 	/* Basic Options */
+	"declaration": true,              /* Generates corresponding '.d.ts' file. */
+	"sourceMap": true,
 	"module": "commonjs",
 	"target": "es6",
 	"experimentalDecorators": true,   /* decorators on functions, e.g. for memoizing function get */
@@ -20,8 +22,6 @@
 	"strict": true,
 	"noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
         "newLine": "LF",
-	"sourceMap": true,
-	"allowJs": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
 	/* Module Resolution Options */

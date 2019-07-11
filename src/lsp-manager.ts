@@ -63,8 +63,12 @@ export class LspManager {
   };
 
 
+  isCompiled(path: string): boolean {
+    return path in this.fileInfo;
+  }
+
   compile(solidityStr: string, path: string, options:
-    any = { logger: this.config.logger }) {
+	  any = { logger: this.config.logger }) {
 
     let logger = {
       ...this.config.logger, ...options.logger
@@ -128,6 +132,10 @@ export class LspManager {
       logger.log(err);
       return {};
     }
+  }
+
+  compileIfNotCompiled(solidityStr: string, path: string, options: any) {
+    if (!this.isCompiled(path)) this.compile(solidityStr, path, options);
   }
 
   solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition
