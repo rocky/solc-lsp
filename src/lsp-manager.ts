@@ -13,7 +13,8 @@ import { StaticInfo } from "./gather-info";
 /* Here we have barebones configuration.
 */
 const default_config = {
-  logger: console
+  logger: console, // Where does output go to?
+  useCache: true   // If false we force recompilation even if we have AST information from before.
 };
 
 /**
@@ -68,11 +69,19 @@ export class LspManager {
   }
 
   compile(solidityStr: string, path: string, options:
-	  any = { logger: this.config.logger }) {
+	  any = { logger: this.config.logger,
+		  useCache: this.config.useCache
+		}) {
 
     let logger = {
       ...this.config.logger, ...options.logger
     };
+
+    if (options.useCache && path in this.fileInfo &&
+	this.fileInfo[path].content === solidityStr) {
+      // We've done this before.
+      return;
+    }
 
     const sources = {
       [path]: {
