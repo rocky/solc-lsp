@@ -10,9 +10,18 @@ tape("gather-info", (t: tape.Test) => {
 
   t.test("offsetToAstNode", (st: tape.Test) => {
 
-    type TupType = [number, string, string, string, string];
-    for (let tup of [<TupType>[62, "53:26:0", "VariableDeclaration", "type", "address"],
-    <TupType>[59, "53:7:0", "ElementaryTypeName", "type description", "address"]]) {
+    type TupType = [number, // node id
+		    string, // src
+		    string, // nodeType
+		    string, // "type" or "type description"
+		    string, // type field
+		    number | undefined,    // parent.id
+		    number  // # of children
+		   ];
+    for (let tup of
+	 [<TupType>[62, "53:26:0", "VariableDeclaration", "type", "address", 26, 2],
+	  <TupType>[59, "53:7:0", "ElementaryTypeName", "type description", "address", undefined, 0]
+	 ]) {
       const offset: number = tup[0];
       const src: string = tup[1];
       const nodeType = tup[2];
@@ -33,6 +42,14 @@ tape("gather-info", (t: tape.Test) => {
         } else {
           t.ok(false, `node at $offset} with ${node.src} has unexpected type ${node.nodeType}`);
         }
+	if (node.parent)
+	  st.equal(node.parent.id, tup[5], "check parent id");
+	else
+	  st.notOk(tup[5], `parent of node ${node.id} should be null`);
+	if (node.children)
+	  st.equal(node.children.length, tup[6], "check # of children");
+	else
+	  st.ok(false, `All nodes, e.g. ${node.id} should children`);
       }
     }
     st.end();
