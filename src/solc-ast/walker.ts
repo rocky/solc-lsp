@@ -33,28 +33,44 @@ export class SolcAstWalker extends EventEmitter {
       // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
       this.emit("node", ast);
       callback(ast);
-      for (let k of Object.keys(ast)) {
-        if ([
-          // All AST nodes have these
-          "id", "src", "nodeType",
-
-          // These are known not to be fields of an AST node
-          "operator", "type", "constant", "name", "absolutePath"
-	      ].includes(k))
-          continue;
-        const astItem = ast[k];
-        if (Array.isArray(astItem)) {
-          for (let child of astItem) {
-            if (child) {
-              this.walkInternal(child, callback);
-            }
-          }
-        } else {
-          this.walkInternal(astItem, callback);
-        }
+      for (const child of this.getChildren(ast)) {
+        this.walkInternal(child, callback);
       }
     }
   }
+
+  getChildren(astItem: SolcAstNode): Array<SolcAstNode> {
+    let children: Array<SolcAstNode> = [];
+    for (const field of Object.keys(astItem)) {
+      if ([
+        // All AST nodes have these
+        "id", "src", "nodeType",
+
+        // These are known not to be fields of an AST node
+        "operator", "type", "constant", "name", "absolutePath",
+
+        // These we ignore because we add them below:
+        "children", "parent"
+
+      ].includes(field))
+        continue;
+
+      const node: any = astItem[field];
+      if (isSolcAstNode(node)) {
+        children.push(node);
+      } else if (Array.isArray(node)) {
+        for (let child of node) {
+          if (isSolcAstNode(child)) {
+            child.parent = astItem;
+            children.push(child);
+          }
+        }
+      }
+    }
+    astItem.children = children;
+    return children;
+  }
+
 
   // Normalizes parameter callback and calls walkInternal
   walk(ast: SolcAstNode, callback: any) {

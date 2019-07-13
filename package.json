@@ -9,9 +9,10 @@
         "url": "https://github.com/rocky/solc-lsp"
     },
     "dependencies": {
+        "@types/tape": "^4.2.33",
         "@types/vscode": "^1.36.0",
         "keccak": "^1.0.2",
-        "@types/tape": "^4.2.33",
+        "node-gyp": "^5.0.2",
         "nyc": "^13.3.0",
         "solc": "^0.5.10",
         "tape": "^4.10.1",

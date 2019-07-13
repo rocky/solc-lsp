@@ -9,7 +9,7 @@
    https://stackoverflow.com/questions/8511281/check-if-a-value-is-an-object-in-javascript
 */
 export function isObject(obj: any): boolean {
-  return obj != null && obj.constructor.name === "Object"
+  return obj != null && obj.constructor.name === "Object";
 }
 
 /**
@@ -23,7 +23,7 @@ export function isSolcAstNode(node: Object): boolean {
     'id' in node &&
     'nodeType' in node &&
     'src' in node
-  )
+  );
 }
 
 export interface SolcRange {
@@ -64,6 +64,9 @@ export interface SolcAstNode {
   readonly sourceUnit?: number;
   readonly symbolAliases?: Array<string>;
   readonly [x: string]: any;
+  // These are filled in
+  children?: Array<SolcAstNode>;
+  parent?: SolcAstNode | null;
 }
 
 /* These are attributes of an AST node, which could
