@@ -1,10 +1,9 @@
 /*
- * Functions around compiling Solidity using solc.
+ * Functions involving compiling Solidity using solc with help from truffle.
  */
 import { statSync, readFileSync } from "fs";
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const solc = require("solc");
+const CompilerSupplier = require("truffle-compile/compilerSupplier");
+import {isAbsolute, normalize} from "path";
 
 /**
   * Reads (Solidity) file passed and returns the
@@ -21,47 +20,68 @@ export function getFileContent(filepath: string) {
   }
 }
 
-/**
- * Called back by the solc when there is an import.
- *
- * FIXME: Here we do the simplest, stupidist thing and just look
- * up the name. You can imagine more sophisticated mechanisms.
- *
- */
-function getImports(pathName: string) {
-  try {
-    return { contents: getFileContent(pathName) };
-  } catch (e) {
-    return {
-      error: `${e.mssage}`
+const truffleConfSnippetDefault = {
+  contracts_directory: null,
+  compilers: {
+    solc: {
+      version: "0.5.10",
+      settings: {
+        optimizer: {
+          enabled: false,
+          runs: 0
+        }
+      }
     }
-  }
-}
-
+  },
+  quiet: true
+};
 
 /**
  * Compile solidity source according to our particular setting.
  *
  * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
- * @param path the place where the source-code string may eventually wind up
+ * @param solcPath the place where the source-code string may eventually wind up
  * @param logger log function
  * @param standardInputOpts other solc input options.
  */
 //
-export function compileSolc(content: string, path: string, logger: any,
-                            standardInputOpts): any {
+export async function compileSolc(content: string, solcPath: string, logger: any,
+                                  standardInputOpts: any,
+                                  truffleConfSnippet: any = truffleConfSnippetDefault
+                                 ): Promise<any> {
 
-  const sources = {
-    [path]: {
-      // Content field is what solc uses. The other fields we have here should be ignored.
-      content
+  let cwd = process.cwd();
+  if (!cwd.endsWith("/")) cwd += "/";
+
+  /**
+   * Called back by the solc when there is an import.
+   *
+   * FIXME: Here we do the simplest, stupidist thing and just look
+   * up the name. You can imagine more sophisticated mechanisms.
+   *
+   */
+  function getImports(pathName) {
+    try {
+      if (!isAbsolute(pathName)) pathName = cwd + pathName;
+      pathName = normalize(pathName);
+      return {
+        contents: getFileContent(pathName)
+      };
+    } catch (e) {
+      return {
+        error: `${e.mssage}`
+      }
     }
-  };
+  }
 
+
+  const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
+  let solc: any;
+  ({ solc } = await supplier.load());
   const solcStandardInput = {
     ...{
       "language": "Solidity",
-      sources: sources,  // Note: "content" set above.
+      sources: { [solcPath]: { content  } },
       settings: {
         // Of the output produced, what part of it?
         outputSelection: {
@@ -70,7 +90,7 @@ export function compileSolc(content: string, path: string, logger: any,
           }
         },
         optimizer: {
-          enabled: false // Since we just want AST info, no optimizer please.
+          enabled: false // We just want AST info, no optimizer please.
         }
       }
     }, ...standardInputOpts
@@ -88,4 +108,11 @@ export function compileSolc(content: string, path: string, logger: any,
     logger.log(err);
     return null;
   }
+}
+
+export function compileSolcSync(content: string, path: string, logger: any,
+                                standardInputOpts: any,
+                                truffleConfSnippet: any = truffleConfSnippetDefault): any {
+  return compileSolc(content, path, logger, standardInputOpts, truffleConfSnippet)
+    .then(result => result);
 }

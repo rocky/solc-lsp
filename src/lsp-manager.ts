@@ -1,4 +1,4 @@
-import { compileSolc } from "./solc-compile";
+import { compileSolcSync } from "./solc-compile";
 
 // import * as solc from "solc";
 
@@ -56,7 +56,7 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    const compiled = compileSolc(content, path, logger, options.solcStandardInput);
+    const compiled = compileSolcSync(content, path, logger, options.solcStandardInput);
     if (!compiled) return;
     try {
       const compiledJSON = JSON.parse(compiled);
