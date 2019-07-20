@@ -20,7 +20,8 @@
         "typescript": "^3.5.2"
     },
     "devDependencies": {
-        "tap-spec": "^5.0.0"
+        "tap-spec": "^5.0.0",
+        "truffle-compile": "^4.1.5"
     },
     "main": "./out/index.js",
     "scripts": {
