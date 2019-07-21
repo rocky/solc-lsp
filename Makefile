@@ -18,4 +18,4 @@ build:
 
 #: clear out node_modules
 clean:
-	rm -fr node_modules
+	rm -fr node_modules out || true

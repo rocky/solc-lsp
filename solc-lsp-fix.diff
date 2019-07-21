@@ -1,0 +1,22 @@
+--- web3-eth-accounts/package.json~	2019-07-20 17:29:55.381095478 -0400
++++ web3-eth-accounts/package.json	2019-07-20 18:45:50.037460626 -0400
+@@ -41,7 +41,7 @@
+     "any-promise": "1.3.0",
+     "crypto-browserify": "3.12.0",
+     "eth-lib": "0.2.7",
+-    "scrypt.js": "0.2.0",
++    "scrypt-js": "2.0.4",
+     "underscore": "1.8.3",
+     "uuid": "2.0.1",
+     "web3-core": "1.0.0-beta.37",
+--- web3-eth-accounts/src/index.js~	1985-10-26 04:15:00.000000000 -0400
++++ web3-eth-accounts/src/index.js	2019-07-20 18:48:34.112045456 -0400
+@@ -32,7 +32,7 @@
+ var Nat = require("eth-lib/lib/nat");
+ var Bytes = require("eth-lib/lib/bytes");
+ var cryp = (typeof global === 'undefined') ? require('crypto-browserify') : require('crypto');
+-var scryptsy = require('scrypt.js');
++var scryptsy = require('scrypt-js');
+ var uuid = require('uuid');
+ var utils = require('web3-utils');
+ var helpers = require('web3-core-helpers');

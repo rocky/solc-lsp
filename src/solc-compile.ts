@@ -109,10 +109,3 @@ export async function compileSolc(content: string, solcPath: string, logger: any
     return null;
   }
 }
-
-export function compileSolcSync(content: string, path: string, logger: any,
-                                standardInputOpts: any,
-                                truffleConfSnippet: any = truffleConfSnippetDefault): any {
-  return compileSolc(content, path, logger, standardInputOpts, truffleConfSnippet)
-    .then(result => result);
-}

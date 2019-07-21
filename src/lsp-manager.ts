@@ -1,4 +1,4 @@
-import { compileSolcSync } from "./solc-compile";
+import { compileSolc } from "./solc-compile";
 
 // import * as solc from "solc";
 
@@ -40,7 +40,7 @@ export class LspManager {
    * @param path compile options
    */
   //
-  compile(content: string, path: string,
+  async compile(content: string, path: string,
           options: any = { logger: this.config.logger,
                            useCache: this.config.useCache,
                            solcStandardInput: {}
@@ -56,7 +56,7 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    const compiled = compileSolcSync(content, path, logger, options.solcStandardInput);
+    const compiled = await compileSolc(content, path, logger, options.solcStandardInput);
     if (!compiled) return;
     try {
       const compiledJSON = JSON.parse(compiled);

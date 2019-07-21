@@ -9,19 +9,20 @@
         "url": "https://github.com/rocky/solc-lsp"
     },
     "dependencies": {
-        "@types/tape": "^4.2.33",
-        "@types/vscode": "^1.36.0",
         "keccak": "^1.0.2",
-        "node-gyp": "^5.0.2",
-        "nyc": "^13.3.0",
         "solc": "^0.5.10",
-        "tape": "^4.10.1",
+        "truffle-compile": "^4.1.5",
         "ts-node": "^8.0.3",
         "typescript": "^3.5.2"
     },
     "devDependencies": {
+        "@types/tape": "^4.2.33",
+        "@types/vscode": "^1.36.0",
+        "node-gyp": "^5.0.2",
+        "nyc": "^13.3.0",
         "tap-spec": "^5.0.0",
-        "truffle-compile": "^4.1.5"
+        "tape": "^4.11.0",
+        "tape-promise": "^4.0.0"
     },
     "main": "./out/index.js",
     "scripts": {
