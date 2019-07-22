@@ -40,16 +40,17 @@ export class LspManager {
    * @param path compile options
    */
   //
-  async compile(content: string, path: string,
+  async compile(content: string, solcPath: string,
                 options: any = { logger: this.config.logger,
                                  useCache: this.config.useCache,
                                  solcStandardInput: {},
                                },
                 truffleConfSnippet: any = truffleConfSnippetDefault) {
 
-    if (options.useCache && path in this.fileInfo &&
-        this.fileInfo[path].content === content) {
-      // We've done this before.
+    if (options.useCache && solcPath in this.fileInfo &&
+        this.fileInfo[solcPath].content === content) {
+      // We've done this before. FIXME: we also need to check that files this
+      // imports haven't changed.
       return;
     }
 
@@ -57,11 +58,13 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    const compiled = await compileSolc(content, path, logger, options.solcStandardInput,
+    const compiled = await compileSolc(content, solcPath, logger, options.solcStandardInput,
                                        truffleConfSnippet);
     if (!compiled) return;
     try {
       const compiledJSON = JSON.parse(compiled);
+
+      // Compute sourceList, the list of sources seen.
       let sourceList: Array<string> = [];
       for (const filePath of Object.keys(compiledJSON.sources)) {
         const source = compiledJSON.sources[filePath];
@@ -71,15 +74,23 @@ export class LspManager {
         }
       }
       compiledJSON.sourceList = sourceList;
-      if (path in compiledJSON.sources) {
-        const sourceInfo = compiledJSON.sources[path];
 
-        // FIXME: we might need to do something about different workspaces or
-        // different collections of files.
+      // Fill in gather-info data for *all* imported sources we hit it
+      // compilation. Down the line we probably will need to track dependencies
+      // And what to do when a dependency changes. Do we recompile code that depends on it?
+      // Or wait until we switch to that file?
+      // Do we note the "root" contract?
+      // Since AST id's are sequentical, the id imported contracts can change depending
+      // on where you started from.
+      for (const filePath of Object.keys(compiledJSON.sources)) {
+        const sourceInfo = compiledJSON.sources[filePath];
+
+        // Note: different projects should have their own LSP manager to reduce
+        // sharing of imported contracts.
         this.fileInfo.sourceList = sourceList;
 
-        if ("ast" in compiledJSON.sources[path]) {
-          this.fileInfo[path] = {
+        if ("ast" in compiledJSON.sources[filePath]) {
+          this.fileInfo[filePath] = {
             ast: sourceInfo.ast,
             content,
             sourceList,
@@ -89,6 +100,21 @@ export class LspManager {
           };
         }
       }
+
+      // Down the line we'll do better about tracking dependecies. For now
+      // we'll just say that sources other than "solcPath" which was given, are dependencies
+      // of "solcPath"
+
+      // Add solcIds from imported sources into imported-from solcIds.
+      this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
+
+      for (const filePath of this.fileInfo[solcPath].imported) {
+	this.fileInfo[solcPath].staticInfo.solcIds = {
+	  ... this.fileInfo[solcPath].staticInfo.solcIds,
+	  ... this.fileInfo[filePath].staticInfo.solcIds
+	};
+      };
+
       return compiledJSON;
     } catch (err) {
       // FIXME: fill in something more meaningful
