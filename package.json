@@ -26,7 +26,7 @@
     },
     "main": "./out/index.js",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --build",
         "watch": "tsc --build --watch",
         "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/*.ts | tap-spec; nyc report ---reporter=text",
         "prepare": "npm run build"

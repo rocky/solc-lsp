@@ -7,3 +7,4 @@ export * from "./ast-fns";
 export * from "./lsp-manager";
 export * from "./conversions";
 export * from "./gather-info";
+export * from "./solc-compile";

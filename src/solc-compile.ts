@@ -3,7 +3,7 @@
  */
 import { statSync, readFileSync } from "fs";
 const CompilerSupplier = require("truffle-compile/compilerSupplier");
-import {isAbsolute, normalize} from "path";
+import { isAbsolute, normalize } from "path";
 
 /**
   * Reads (Solidity) file passed and returns the
@@ -11,12 +11,12 @@ import {isAbsolute, normalize} from "path";
   *
   * FIXME: This could be made asynchronous for better performance.
   */
-export function getFileContent(filepath: string) {
-  const stats = statSync(filepath);
+export function getFileContent(filePath: string) {
+  const stats = statSync(filePath);
   if (stats.isFile()) {
-    return readFileSync(filepath).toString();
+    return readFileSync(filePath).toString();
   } else {
-    throw `File "${filepath}" not found`;
+    throw `File "${filePath}" not found`;
   }
 }
 
@@ -43,12 +43,15 @@ export const truffleConfSnippetDefault = {
  * @param solcPath the place where the source-code string may eventually wind up
  * @param logger log function
  * @param standardInputOpts other solc input options.
+ * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
+ *                                  and "contracts_directory" attribute. See @a truffleConfsnippetdefault
+ *                                  for such an object.
  */
 //
 export async function compileSolc(content: string, solcPath: string, logger: any,
-                                  standardInputOpts: any,
-                                  truffleConfSnippet: any = truffleConfSnippetDefault
-                                 ): Promise<any> {
+  standardInputOpts: any,
+  truffleConfSnippet: any = truffleConfSnippetDefault
+): Promise<any> {
 
   let cwd = process.cwd();
   if (!cwd.endsWith("/")) cwd += "/";
@@ -60,7 +63,7 @@ export async function compileSolc(content: string, solcPath: string, logger: any
    * up the name. You can imagine more sophisticated mechanisms.
    *
    */
-  function getImports(pathName) {
+  function getImports(pathName: string) {
     try {
       if (!isAbsolute(pathName)) pathName = cwd + pathName;
       pathName = normalize(pathName);
@@ -83,7 +86,7 @@ export async function compileSolc(content: string, solcPath: string, logger: any
   const solcStandardInput = {
     ...{
       "language": "Solidity",
-      sources: { [solcPath]: { content  } },
+      sources: { [solcPath]: { content } },
       settings: {
         // Of the output produced, what part of it?
         outputSelection: {
@@ -99,7 +102,7 @@ export async function compileSolc(content: string, solcPath: string, logger: any
   };
 
   if (solc.version() >= '0.5.10' &&
-      !solcStandardInput.settings.parserErrorRecovery) {
+    !solcStandardInput.settings.parserErrorRecovery) {
     // Set for extended errors
     solcStandardInput.settings.parserErrorRecovery = true;
   }
