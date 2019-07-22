@@ -1,4 +1,4 @@
-import { compileSolc } from "./solc-compile";
+import { compileSolc, truffleConfSnippetDefault } from "./solc-compile";
 
 // import * as solc from "solc";
 
@@ -41,10 +41,11 @@ export class LspManager {
    */
   //
   async compile(content: string, path: string,
-          options: any = { logger: this.config.logger,
-                           useCache: this.config.useCache,
-                           solcStandardInput: {}
-                         }) {
+                options: any = { logger: this.config.logger,
+                                 useCache: this.config.useCache,
+                                 solcStandardInput: {},
+                               },
+                truffleConfSnippet: any = truffleConfSnippetDefault) {
 
     if (options.useCache && path in this.fileInfo &&
         this.fileInfo[path].content === content) {
@@ -56,7 +57,8 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    const compiled = await compileSolc(content, path, logger, options.solcStandardInput);
+    const compiled = await compileSolc(content, path, logger, options.solcStandardInput,
+                                       truffleConfSnippet);
     if (!compiled) return;
     try {
       const compiledJSON = JSON.parse(compiled);

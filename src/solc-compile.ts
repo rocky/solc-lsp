@@ -20,7 +20,7 @@ export function getFileContent(filepath: string) {
   }
 }
 
-const truffleConfSnippetDefault = {
+export const truffleConfSnippetDefault = {
   contracts_directory: null,
   compilers: {
     solc: {
@@ -74,7 +74,9 @@ export async function compileSolc(content: string, solcPath: string, logger: any
     }
   }
 
-
+  if (truffleConfSnippet.compilers.solc.version === null) {
+    truffleConfSnippet.compilers.solc.version = truffleConfSnippetDefault.compilers.solc.version;
+  }
   const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;
   ({ solc } = await supplier.load());
