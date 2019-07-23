@@ -47,7 +47,6 @@ export function getTypeDefinition(finfo: SolcFileInfo, selection: LineColRange):
 
 export function getTypeDefinitionNodeFromSolcNode(staticInfo: StaticInfo,
   node: SolcAstNode): SolcAstNode | null {
-  debugger;
   if (node && ("typeDescriptions" in node && "referencedDeclaration" in node)) {
     const declNode = staticInfo.solcIds[node.referencedDeclaration];
     if ("typeName" in declNode) {
