@@ -14,7 +14,7 @@ test: check
 
 #: Compile typescript to javascript
 build:
-	tsc --build
+	npx tsc --build
 
 #: clear out node_modules
 clean:
