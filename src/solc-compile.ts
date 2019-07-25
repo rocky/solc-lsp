@@ -25,6 +25,7 @@ export const truffleConfSnippetDefault = {
   compilers: {
     solc: {
       version: "0.5.10",
+      // Note that this is called standardInputOpts.settings in solc terminology
       settings: {
         optimizer: {
           enabled: false,
@@ -42,14 +43,12 @@ export const truffleConfSnippetDefault = {
  * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
  * @param solcPath the place where the source-code string may eventually wind up
  * @param logger log function
- * @param standardInputOpts other solc input options.
  * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
  *                                  and "contracts_directory" attribute. See @a truffleConfsnippetdefault
  *                                  for such an object.
  */
 //
 export async function compileSolc(content: string, solcPath: string, logger: any,
-  standardInputOpts: any,
   truffleConfSnippet: any = truffleConfSnippetDefault
 ): Promise<any> {
 
@@ -80,10 +79,13 @@ export async function compileSolc(content: string, solcPath: string, logger: any
   if (truffleConfSnippet.compilers.solc.version === null) {
     truffleConfSnippet.compilers.solc.version = truffleConfSnippetDefault.compilers.solc.version;
   }
+  if (truffleConfSnippet.compilers.solc.setting === null) {
+    truffleConfSnippet.compilers.solc.settings = {};
+  }
   const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;
   ({ solc } = await supplier.load());
-  const solcStandardInput = {
+  const solcStandardInput: any = {
     ...{
       "language": "Solidity",
       sources: { [solcPath]: { content } },
@@ -96,13 +98,13 @@ export async function compileSolc(content: string, solcPath: string, logger: any
         },
         optimizer: {
           enabled: false // We just want AST info, no optimizer please.
-        }
+        }, ...truffleConfSnippet.compilers.solc.settings
       }
-    }, ...standardInputOpts
+    }
   };
 
-  if (solc.version() >= '0.5.10' &&
-    !solcStandardInput.settings.parserErrorRecovery) {
+  if (solc.version() >= "0.5.10" &&
+      !("parserErrorRecovery" in solcStandardInput.settings)) {
     // Set for extended errors
     solcStandardInput.settings.parserErrorRecovery = true;
   }

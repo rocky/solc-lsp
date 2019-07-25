@@ -43,7 +43,6 @@ export class LspManager {
   async compile(content: string, solcPath: string,
                 options: any = { logger: this.config.logger,
                                  useCache: this.config.useCache,
-                                 solcStandardInput: {},
                                },
                 truffleConfSnippet: any = truffleConfSnippetDefault) {
 
@@ -58,8 +57,7 @@ export class LspManager {
       ...this.config.logger, ...options.logger
     };
 
-    const compiled = await compileSolc(content, solcPath, logger, options.solcStandardInput,
-                                       truffleConfSnippet);
+    const compiled = await compileSolc(content, solcPath, logger, truffleConfSnippet);
     if (!compiled) return;
     try {
       const compiledJSON = JSON.parse(compiled);
@@ -99,6 +97,10 @@ export class LspManager {
             staticInfo: new StaticInfo(sourceInfo.ast)
           };
         }
+      }
+
+      if ("contracts" in compiledJSON) {
+        this.fileInfo[solcPath].contracts = compiledJSON.contracts;
       }
 
       // Down the line we'll do better about tracking dependecies. For now
