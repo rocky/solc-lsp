@@ -1,9 +1,13 @@
 /*
- * Functions involving compiling Solidity using solc with help from truffle.
+ * Functions involving compiling Solidity using solc with help from truffle, get-installed--path.
+ *
+ * Just about everybody who uses solc has their own "compile" module. _Ours_ is the true general-purpose solc compile.
  */
 import { statSync, readFileSync } from "fs";
 const CompilerSupplier = require("truffle-compile/compilerSupplier");
-import { isAbsolute, normalize } from "path";
+import { basename, dirname, isAbsolute, normalize, sep } from "path";
+const detectInstalled = require('detect-installed');
+const { getInstalledPathSync } = require('get-installed-path');
 
 /**
   * Reads (Solidity) file passed and returns the
@@ -20,9 +24,6 @@ export function getFileContent(filePath: string) {
   }
 }
 
-/**
- * Our compile options use a form that is compatible with [truffle](https://www.trufflesuite.com/truffle).
- */
 export const truffleConfSnippetDefault = {
   contracts_directory: null,
   compilers: {
@@ -40,6 +41,23 @@ export const truffleConfSnippetDefault = {
   quiet: true
 };
 
+function resolveNPM(pathName: string, cwd: string): string {
+  let packageName: string;
+  if (pathName.startsWith(sep)) {
+    packageName = pathName.split(sep)[1];
+  } else {
+    packageName = pathName.split(sep)[0];
+  }
+  if (detectInstalled.sync(packageName, {local: true, cwd})) {
+    return getInstalledPathSync(packageName, {local: true, cwd});
+  } else {
+    if (basename(cwd) === "contracts") {
+      return getInstalledPathSync(packageName, {local: true, cwd: dirname(cwd)});
+    }
+    throw "Can't find as NPM package";
+  }
+}
+
 /**
  * Compile solidity source according to our particular setting.
  *
@@ -55,9 +73,6 @@ export async function compileSolc(content: string, solcPath: string, logger: any
   truffleConfSnippet: any = truffleConfSnippetDefault
 ): Promise<any> {
 
-  let cwd = process.cwd();
-  if (!cwd.endsWith("/")) cwd += "/";
-
   /**
    * Called back by the solc when there is an import.
    *
@@ -67,24 +82,48 @@ export async function compileSolc(content: string, solcPath: string, logger: any
    */
   function getImports(pathName: string) {
     try {
-      if (!isAbsolute(pathName)) pathName = cwd + pathName;
-      pathName = normalize(pathName);
+      const cwd = truffleConfSnippet.contracts_directory;
+      if (!isAbsolute(pathName))
+        pathName = cwd + pathName;
+	    pathName = normalize(pathName);
+
+      try {
+        const stat = statSync(pathName);
+        if (!stat.isFile()) {
+          // Do we have an NPM-installed local or global directory?
+          pathName = resolveNPM(pathName, cwd);
+        }
+      } catch {
+        // Do we have an NPM-installed local or global directory?
+        pathName = resolveNPM(pathName, cwd);
+      }
+      // Check if this comes from an an npm package.
+      /// Add isInstalled and get-installed-path here.
       return {
         contents: getFileContent(pathName)
       };
     } catch (e) {
       return {
-        error: `${e.mssage}`
+        error: `${e.message}`
       }
     }
   }
 
+  if (truffleConfSnippet.contracts_directory === null) {
+    truffleConfSnippet.contracts_directory = process.cwd();
+  }
+
+  if (!truffleConfSnippet.contracts_directory.endsWith(sep))
+    truffleConfSnippet.contracts_directory + sep;
+
   if (truffleConfSnippet.compilers.solc.version === null) {
     truffleConfSnippet.compilers.solc.version = truffleConfSnippetDefault.compilers.solc.version;
   }
+
   if (truffleConfSnippet.compilers.solc.setting === null) {
     truffleConfSnippet.compilers.solc.settings = {};
   }
+
   const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;
   ({ solc } = await supplier.load());
