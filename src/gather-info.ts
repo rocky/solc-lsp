@@ -3,7 +3,7 @@
  * includng "src' information.
  */
 
-import { SolcAstNode } from "./solc-ast/types";
+import { SolcRange, SolcAstNode } from "./solc-ast/types";
 import { SolcAstWalker } from "./solc-ast/walker";
 import { sourceSolcRangeFromSrc, findLowerBound } from "./solc-ast/source-mappings";
 
@@ -125,17 +125,17 @@ export class StaticInfo {
     const startOffset = starts[lb];
     if (this.startOffset.list[startOffset]) {
       /* We want smallest length for this start address, that covers
-	 the range.  But this can be subtle. Consider:
+   the range.  But this can be subtle. Consider:
 
-	 address owner = msg.sender;
-	 ^^^^^^^ type name
-	 ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
+   address owner = msg.sender;
+   ^^^^^^^ type name
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
                    ^ we want info about here
 
          Taking the shortest string that starts at the beginning of
-	 the line (here, a type name) is wrong. We also need to check
-	 that it also spans where we are inside the variable
-	 declaration.
+   the line (here, a type name) is wrong. We also need to check
+   that it also spans where we are inside the variable
+   declaration.
       */
       // TODO: parameterize or pass a condition to look for?
       const minTup = this.startOffset.list[startOffset]
@@ -147,4 +147,42 @@ export class StaticInfo {
     }
     return null;
   }
+
+  /* Find an AST node that is closest to offset and if there are several
+     at the offset, get the one with the smallest length.
+     FIXME: generalize to other conditions other than say length.
+   */
+  solcRangeToAstNode(range: SolcRange): SolcAstNode | null {
+    const starts = this.startOffset.starts;
+    const endOffset = range.start + range.length;
+    let lb = findLowerBound(range.start, starts);
+    if (lb < 0) lb = 0;
+    const startOffset = starts[lb];
+    if (this.startOffset.list[startOffset]) {
+      /* We want smallest length for this start address, that covers
+   the range.  But this can be subtle. Consider:
+
+   address owner = msg.sender;
+   ^^^^^^^ type name
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
+                   ^ we want info about here
+
+         Taking the shortest string that starts at the beginning of
+   the line (here, a type name) is wrong. We also need to check
+   that it also spans where we are inside the variable
+   declaration.
+      */
+      // TODO: parameterize or pass a condition to look for?
+      // FIXME: verify and test
+
+      const minTup = this.startOffset.list[startOffset]
+        .reduce((minTup, tup) =>
+          (minTup.length >= tup.length && (startOffset + tup.length >= endOffset) ? tup : minTup));
+      const astNode = this.solcIds[minTup.id];
+      // this.startOffset.cache[range] = astNode;
+      return astNode;
+    }
+    return null;
+  }
+
 }
