@@ -1,0 +1,10 @@
+{
+  "name": "oz-example",
+  "version": "1.0.0",
+  "description": "OpenZeppelin test complation example. We use this for testing npm-style imports",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "openzeppelin-solidity": "^2.3.0"
+  }
+}

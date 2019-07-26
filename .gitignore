@@ -1,10 +1,11 @@
 *~
+/.DS_Store
 /.nyc_output
+/.vscode
 /coverage
 /out
 /package-lock.json
-node_modules
-tmp
-/.vscode
 /vscode/launch.json
 /vscode/tasks.json
+node_modules
+tmp
