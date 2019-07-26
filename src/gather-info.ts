@@ -173,7 +173,6 @@ export class StaticInfo {
    declaration.
       */
       // TODO: parameterize or pass a condition to look for?
-      // FIXME: verify and test
 
       const minTup = this.startOffset.list[startOffset]
         .reduce((minTup, tup) =>

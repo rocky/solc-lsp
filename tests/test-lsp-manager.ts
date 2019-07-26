@@ -5,15 +5,14 @@ import {
 } from "../out";
 
 tape("LspManager", (t: tape.Test) => {
-  const lspConfig = {};
   t.test("AstFns", (st: tape.Test) => {
-    const lspMgr = new LspManager(lspConfig);
+    const lspMgr = new LspManager();
     st.notOk(lspMgr.isCompiled("test.sol"));
     st.end();
   });
 
   t.test("Adding Solc Ids in imported code", (st: tape.Test) => {
-    const lspMgr = new LspManager(lspConfig);
+    const lspMgr = new LspManager();
     const solFilePath = __dirname + "/resources/MetaCoin.sol";
     const solidityStr = getFileContent(solFilePath);
     lspMgr.compile(solidityStr, solFilePath).then(() => {

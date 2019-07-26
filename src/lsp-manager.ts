@@ -7,9 +7,14 @@ import { LineColPosition, LineColRange, SolcAstNode, SourceMappings, SolcRange,
          sourceSolcRangeFromSrc } from "./solc-ast";
 import { StaticInfo } from "./gather-info";
 
+interface LspManagerConfig {
+    readonly logger: any;
+    readonly useCache: boolean;
+}
+
 /* Here we have barebones configuration.
 */
-const default_config = {
+const defaultConfig = {
   logger: console, // Where does output go to?
   useCache: true   // If false we force recompilation even if we have AST information from before.
 };
@@ -19,11 +24,11 @@ const default_config = {
  */
 export class LspManager {
 
-  config = { ...default_config };
-  fileInfo: any;
+  config: LspManagerConfig = { ...defaultConfig };
+  fileInfo: any; // FIXME: create an interface of fileInfo stuff.
 
-  constructor(config: any) {
-    this.config = { ...config, ...default_config };
+  constructor(config = defaultConfig) {
+    this.config = config;
     this.fileInfo = {};
   };
 
