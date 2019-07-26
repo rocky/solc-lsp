@@ -1,3 +1,8 @@
+/**
+   Top-level routines for a Language Server Protocal functions. The main class is [[LspManager]].
+   Note we are not a Language Server, but just are implementing the library that would be used for
+   such a server.
+**/
 import { compileSolc, truffleConfSnippetDefault } from "./solc-compile";
 
 // import * as solc from "solc";
@@ -6,6 +11,7 @@ import { getDefinition, getTypeDefinition } from "./ast-fns";
 import { LineColPosition, LineColRange, SolcAstNode, SourceMappings, SolcRange,
          sourceSolcRangeFromSrc } from "./solc-ast";
 import { StaticInfo } from "./gather-info";
+import { solcRangeFromLineColRange } from "./conversions";
 
 interface LspManagerConfig {
     readonly logger: any;
@@ -131,10 +137,27 @@ export class LspManager {
     }
   }
 
-  compileIfNotCompiled(solidityStr: string, path: string, options: any) {
-    if (!this.isCompiled(path)) this.compile(solidityStr, path, options);
+  /**
+   * Compile `solcStr` associated with `filePath` it has been compiled before.
+   *
+   * @param solcStr solidity source code contents to compile
+   * @param filePath source path that contents might reside at
+   * @param compileOptions options to pass to solc
+   */
+  compileIfNotCompiled(solidityStr: string, filePath: string, compileOptions: any) {
+    if (!this.isCompiled(filePath)) this.compile(solidityStr, filePath, compileOptions);
   }
 
+  /**
+   * Find a solc AST node that most closely matches the given
+   * line/column selection located in filePath. Note here we start out
+   * with a single position. See [[solcAstNodeFromLineColRange]] for
+   * doing the same starting out with a range.
+   *
+   * @param filePath file location that the AST node should located in
+   * @param selection position that the AST should match or minimally encompass
+   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or null if nothing can be found.
+   */
   solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition
   ): [any, SolcAstNode] | null {
     if (!(filePath in this.fileInfo)) {
@@ -143,6 +166,42 @@ export class LspManager {
     const finfo = this.fileInfo[filePath];
     const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
     return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
+  }
+
+  /**
+   * Find a solc AST node that most closely matches the given
+   * line/column selection range in filePath. Note here we start out
+   * with a range. See [[solcAstNodeFromLineColPosition]] for doing
+   * the same starting out with a single position.
+   *
+   * @param filePath file location that the AST node should located in
+   * @param selection range that the AST should match or minimally encompass
+   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or null if nothing can be found.
+   */
+  solcAstNodeFromLineColRange(filePath: string, selection: LineColRange
+  ): [any, SolcAstNode] | null {
+    if (!(filePath in this.fileInfo)) {
+      return null;
+    }
+    const finfo = this.fileInfo[filePath];
+    const solcRange = solcRangeFromLineColRange(selection, finfo.sourceMapping.lineBreaks)
+    return [finfo, finfo.staticInfo.solcRangeToAstNode(solcRange)];
+  }
+
+  /**
+   * Find a solc AST node that most closely matches the given solc selection range.
+   * See [[solcAstNodeFromLineColRange]] and [[solcAstNodeFromLineColPosition]]
+   * for doing the same starting out with line/column ranges.
+   *
+   * @param filePath file location that the AST node should located in
+   * @param selection range that the AST should match or minimally encompass
+   * @returns found SolcASTNode or null if nothing can be found
+   */
+  solcAstNodeFromSolcRange(solcRange: SolcRange
+                          ): SolcAstNode | null {
+    const filePath = this.fileInfo.sourceList[solcRange.fileIndex];
+    const finfo = this.fileInfo[filePath];
+    return finfo.staticInfo.solcRangeToAstNode(solcRange);
   }
 
   /**

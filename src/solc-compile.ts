@@ -20,6 +20,9 @@ export function getFileContent(filePath: string) {
   }
 }
 
+/**
+ * Our compile options use a form that is compatible with [truffle](https://www.trufflesuite.com/truffle).
+ */
 export const truffleConfSnippetDefault = {
   contracts_directory: null,
   compilers: {
@@ -44,7 +47,7 @@ export const truffleConfSnippetDefault = {
  * @param solcPath the place where the source-code string may eventually wind up
  * @param logger log function
  * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
- *                                  and "contracts_directory" attribute. See @a truffleConfsnippetdefault
+ *                                  and "contracts_directory" attribute. See [[truffleConfsnippetdefault]]
  *                                  for such an object.
  */
 //
