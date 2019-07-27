@@ -4,11 +4,11 @@
  * Just about everybody who uses solc has their own "compile" module. _Ours_ is the true general-purpose solc compile.
  */
 import { statSync, readFileSync } from "fs";
+
 const CompilerSupplier = require("truffle-compile/compilerSupplier");
-const detectInstalled = require('detect-installed');
 const { getInstalledPathSync } = require('get-installed-path');
 
-import { basename, dirname, isAbsolute, normalize, sep } from "path";
+import { dirname, isAbsolute, join, normalize, sep } from "path";
 import { truffleConfSnippetNormalize, truffleConfSnippetDefault } from "./trufstuf";
 
 /**
@@ -26,75 +26,80 @@ export function getFileContent(filePath: string) {
   }
 }
 
-function resolveNPM(pathName: string, cwd: string): string {
+function resolveNPM(pathName: string, truffleRoot: string): string {
   let packageName: string;
   if (pathName.startsWith(sep)) {
     packageName = pathName.split(sep)[1];
   } else {
     packageName = pathName.split(sep)[0];
   }
-  if (detectInstalled.sync(packageName, {local: true, cwd})) {
-    return getInstalledPathSync(packageName, {local: true, cwd});
-  } else {
-    if (basename(cwd) === "contracts") {
-      return getInstalledPathSync(packageName, {local: true, cwd: dirname(cwd)});
-    }
-    throw "Can't find as NPM package";
-  }
+  return getInstalledPathSync(packageName, {local: true, cwd: truffleRoot});
 }
 
 /**
  * Compile solidity source according to our particular setting.
  *
  * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
- * @param solcPath the place where the source-code string may eventually wind up
+ * @param sourcePath the place where the source-code string may eventually wind up
  * @param logger log function
  * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
  *                                  and "contracts_directory" attribute. See [[truffleConfsnippetdefault]]
  *                                  for such an object.
  */
 //
-export async function compileSolc(content: string, solcPath: string, logger: any,
-  truffleConfSnippet: any = truffleConfSnippetDefault
+export async function compileSolc(content: string, sourcePath: string, logger: any,
+  truffleConfSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 
   /**
    * Called back by the solc when there is an import.
+   * We currently handle NPM local and global packages such as from
+   * openzeppelin.
    *
-   * FIXME: Here we do the simplest, stupidist thing and just look
-   * up the name. You can imagine more sophisticated mechanisms.
+   * FIXME: handle epm and other things?
    *
+   * @param pathName the file name we are trying to resolve
    */
-  function getImports(pathName: string) {
+  function getImports(pathName: string): any {
     try {
       const cwd = truffleConfSnippet.contracts_directory;
-      if (!isAbsolute(pathName))
-        pathName = cwd + pathName;
+      if (!isAbsolute(pathName)) {
+        const pathNameTry = join(cwd, pathName);
+        try {
+          if (statSync(pathName).isFile()) {
+            pathName = pathNameTry;
+          }
+        } catch(_) { };
+      }
 	    pathName = normalize(pathName);
 
       try {
         const stat = statSync(pathName);
-        if (!stat.isFile()) {
+        if (!stat.isFile() && truffleConfSnippet.truffle_directory) {
           // Do we have an NPM-installed local or global directory?
-          pathName = resolveNPM(pathName, cwd);
+          const dir = resolveNPM(pathName, truffleConfSnippet.truffle_directory);
+          // the final directory name is repeated, so remove that.
+          pathName = join(dirname(dir), pathName);
         }
       } catch {
         // Do we have an NPM-installed local or global directory?
-        pathName = resolveNPM(pathName, cwd);
+        if (truffleConfSnippet.truffle_directory) {
+          const dir = resolveNPM(pathName, truffleConfSnippet.truffle_directory);
+          // the final directory name is repeated, so remove that.
+          pathName = join(dirname(dir), pathName);
+        } else {
+          return { error: "Not an NPM import" }
+        }
       }
-      // Check if this comes from an an npm package.
-      /// Add isInstalled and get-installed-path here.
       return {
         contents: getFileContent(pathName)
       };
     } catch (e) {
-      return {
-        error: `${e.message}`
-      }
+      return { error: `${e.message}` }
     }
   }
 
-  truffleConfSnippetNormalize(truffleConfSnippet);
+  truffleConfSnippetNormalize(sourcePath, truffleConfSnippet);
 
   const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;
@@ -102,7 +107,7 @@ export async function compileSolc(content: string, solcPath: string, logger: any
   const solcStandardInput: any = {
     ...{
       "language": "Solidity",
-      sources: { [solcPath]: { content } },
+      sources: { [sourcePath]: { content } },
       settings: {
         // Of the output produced, what part of it?
         outputSelection: {

@@ -9,7 +9,6 @@
         "url": "https://github.com/rocky/solc-lsp"
     },
     "dependencies": {
-        "detect-installed": "^2.0.4",
         "find-up": "^4.1.0",
         "get-installed-path": "^4.0.8",
         "keccak": "^1.0.2",

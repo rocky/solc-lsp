@@ -4,11 +4,11 @@
 
 const findUp = require('find-up');
 import { existsSync, statSync } from "fs";
-import { dirname, join, sep } from "path";
+import { dirname, join } from "path";
 
 export interface TruffleConfigSnippet {
   truffle_directory?: string;  // Solidity source code as a string
-  contracts_directory?: string;
+  contracts_directory: string;
   compilers: any;
   quiet: boolean;
 }
@@ -23,12 +23,12 @@ const TRUFFLE_ROOT_DIRS = ["contracts", "migrations"];
  * Note: if `truffle_directory` is `undefined`, then we do not think this is a
  * a truffle project.
  *
- * `contract_directory` should not normally be `undefined`. It is generally
- * the basename of the program that is to be compiled.
+ * If `contract_directory` is "" it has not been set yet. It is
+ * generally the basename of the program that is to be compiled.
 */
 export const truffleConfSnippetDefault: TruffleConfigSnippet = {
   truffle_directory: undefined,
-  contracts_directory: undefined,
+  contracts_directory: "",
   compilers: {
     solc: {
       version: "0.5.10",
@@ -103,18 +103,23 @@ export function findTruffleRoot(startPath: string): string | undefined {
 }
 
 /**
-   Not all things we want to compile are truffle projects.
-   However we want to try to leverage truffle's libraries as much as possible.
+  * Not all things we want to compile are truffle projects.
+  * However we want to try to leverage truffle's libraries as much as possible.
+  *
+  * Here we "normalize", fill out, or fake up truffle-like configuration information.
+  *
+  * @param solcSourcePath Solidity source code path name
+  * @param snippetConf the truffle snippet will be normalized
+  */
+export function truffleConfSnippetNormalize(solcSourcePath: string, snippetConf: TruffleConfigSnippet) {
 
-   Here we "normalize", fill out, or fake truffle-like configuration information.
- */
-export function truffleConfSnippetNormalize(snippetConf: any) {
-  if (snippetConf.contracts_directory === undefined) {
-	  snippetConf.contracts_directory = process.cwd();
+  if (snippetConf.truffle_directory === undefined) {
+    snippetConf.truffle_directory = findTruffleRoot(solcSourcePath);
   }
 
-  if (!snippetConf.contracts_directory.endsWith(sep))
-    snippetConf.contracts_directory + sep;
+  if (snippetConf.contracts_directory === undefined) {
+	  snippetConf.contracts_directory = dirname(solcSourcePath);
+  }
 
   if (snippetConf.compilers.solc.version === null) {
     snippetConf.compilers.solc.version = truffleConfSnippetDefault.compilers.solc.version;

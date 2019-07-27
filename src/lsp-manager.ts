@@ -119,15 +119,16 @@ export class LspManager {
       // we'll just say that sources other than "solcPath" which was given, are dependencies
       // of "solcPath"
 
-	    // Add solcIds from imported sources into imported-from solcIds.
-      if (solcPath in this.fileInfo)
+      // Add solcIds from imported sources into imported-from solcIds.
+      if (solcPath in this.fileInfo) {
         this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
 
-      for (const filePath of this.fileInfo[solcPath].imported) {
-	this.fileInfo[solcPath].staticInfo.solcIds = {
-	  ... this.fileInfo[solcPath].staticInfo.solcIds,
-	  ... this.fileInfo[filePath].staticInfo.solcIds
-	};
+        for (const filePath of this.fileInfo[solcPath].imported) {
+          this.fileInfo[solcPath].staticInfo.solcIds = {
+            ... this.fileInfo[solcPath].staticInfo.solcIds,
+            ... this.fileInfo[filePath].staticInfo.solcIds
+          };
+        };
       };
 
       return compiledJSON;
