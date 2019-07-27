@@ -5,9 +5,11 @@
  */
 import { statSync, readFileSync } from "fs";
 const CompilerSupplier = require("truffle-compile/compilerSupplier");
-import { basename, dirname, isAbsolute, normalize, sep } from "path";
 const detectInstalled = require('detect-installed');
 const { getInstalledPathSync } = require('get-installed-path');
+
+import { basename, dirname, isAbsolute, normalize, sep } from "path";
+import { truffleConfSnippetNormalize, truffleConfSnippetDefault } from "./trufstuf";
 
 /**
   * Reads (Solidity) file passed and returns the
@@ -23,23 +25,6 @@ export function getFileContent(filePath: string) {
     throw `File "${filePath}" not found`;
   }
 }
-
-export const truffleConfSnippetDefault = {
-  contracts_directory: null,
-  compilers: {
-    solc: {
-      version: "0.5.10",
-      // Note that this is called standardInputOpts.settings in solc terminology
-      settings: {
-        optimizer: {
-          enabled: false,
-          runs: 0
-        }
-      }
-    }
-  },
-  quiet: true
-};
 
 function resolveNPM(pathName: string, cwd: string): string {
   let packageName: string;
@@ -109,20 +94,7 @@ export async function compileSolc(content: string, solcPath: string, logger: any
     }
   }
 
-  if (truffleConfSnippet.contracts_directory === null) {
-    truffleConfSnippet.contracts_directory = process.cwd();
-  }
-
-  if (!truffleConfSnippet.contracts_directory.endsWith(sep))
-    truffleConfSnippet.contracts_directory + sep;
-
-  if (truffleConfSnippet.compilers.solc.version === null) {
-    truffleConfSnippet.compilers.solc.version = truffleConfSnippetDefault.compilers.solc.version;
-  }
-
-  if (truffleConfSnippet.compilers.solc.setting === null) {
-    truffleConfSnippet.compilers.solc.settings = {};
-  }
+  truffleConfSnippetNormalize(truffleConfSnippet);
 
   const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;

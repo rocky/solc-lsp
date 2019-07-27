@@ -1,4 +1,5 @@
 import tape from "tape";
+import { join } from "path"
 import {
   getDefinitionNodeFromSolcNode,
   getFileContent, LspManager
@@ -13,7 +14,7 @@ tape("LspManager", (t: tape.Test) => {
 
   t.test("Adding Solc Ids in imported code", (st: tape.Test) => {
     const lspMgr = new LspManager();
-    const solFilePath = __dirname + "/resources/MetaCoin.sol";
+    const solFilePath = join(__dirname, "/resources/MetaCoin.sol");
     const solidityStr = getFileContent(solFilePath);
     lspMgr.compile(solidityStr, solFilePath).then(() => {
       const fileInfo = lspMgr.fileInfo;

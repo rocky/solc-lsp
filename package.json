@@ -10,11 +10,11 @@
     },
     "dependencies": {
         "detect-installed": "^2.0.4",
+        "find-up": "^4.1.0",
         "get-installed-path": "^4.0.8",
         "keccak": "^1.0.2",
         "solc": "^0.5.10",
         "truffle-compile": "^4.1.5",
-        "ts-node": "^8.0.3",
         "typescript": "^3.5.2"
     },
     "devDependencies": {
@@ -24,7 +24,8 @@
         "nyc": "^13.3.0",
         "tap-spec": "^5.0.0",
         "tape": "^4.11.0",
-        "tape-promise": "^4.0.0"
+        "tape-promise": "^4.0.0",
+        "ts-node": "^8.3.0"
     },
     "main": "./out/index.js",
     "scripts": {

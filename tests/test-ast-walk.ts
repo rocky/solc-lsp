@@ -1,10 +1,11 @@
 import tape from "tape";
+import { join } from "path"
 import { SolcAstWalker, SolcAstNode, isSolcAstNode } from "../src/solc-ast/";
 const fs = require("fs");
 
 tape("SolcASTWalker", (t: tape.Test) => {
     const astWalker = new SolcAstWalker();
-    const solidityAst = __dirname + '/resources/ast.json';
+    const solidityAst = join(__dirname,  "/resources/ast.json");
     const ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
     t.test("ASTWalk", (st: tape.Test) => {
 	const astNodeCount = 91;

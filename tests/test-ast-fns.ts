@@ -1,4 +1,5 @@
 import tape from "tape";
+import { join } from "path"
 const fs = require("fs");
 import { SourceMappings } from "../out/solc-ast";
 import { SolcFileInfo } from "../out/ast-fns";
@@ -6,10 +7,10 @@ import { StaticInfo } from "../out/gather-info";
 import { getDefinition, getTypeDefinition } from "../out";
 
 tape("conversion", (t: tape.Test) => {
-  const solidityAst = __dirname + '/resources/ast.json';
-  const ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
-  const solidityFile = __dirname + '/resources/token-good.sol';
-  const solidityStr = fs.readFileSync(solidityFile, 'utf8')
+  const solidityAst = join(__dirname, "/resources/ast.json");
+  const ast = JSON.parse(fs.readFileSync(solidityAst, "utf8"));
+  const solidityFile = join(__dirname, "/resources/token-good.sol");
+  const solidityStr = fs.readFileSync(solidityFile, "utf8")
 
   const staticInfo = new StaticInfo(ast);
 
@@ -17,7 +18,7 @@ tape("conversion", (t: tape.Test) => {
     ast,
     sourceMapping: new SourceMappings(solidityStr),
     staticInfo,
-    content: '',
+    content: "",
   };
 
   t.test("AstFns", (st: tape.Test) => {
@@ -46,7 +47,7 @@ tape("conversion", (t: tape.Test) => {
 
     // Do another with no range/
     // st.equal(info, null, "definition not found");
-    // console.log('-----');
+    // console.log("-----");
     // const defInfo = lspMgr.gotoDefinition(solidityFile, range);
     // console.log(defInfo);
     // st.ok(defInfo);

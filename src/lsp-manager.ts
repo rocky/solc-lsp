@@ -3,7 +3,8 @@
    Note we are not a Language Server, but just are implementing the library that would be used for
    such a server.
 **/
-import { compileSolc, truffleConfSnippetDefault } from "./solc-compile";
+import { compileSolc } from "./solc-compile";
+import { truffleConfSnippetDefault } from "./trufstuf";
 
 // import * as solc from "solc";
 

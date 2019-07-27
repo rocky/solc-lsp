@@ -1,10 +1,11 @@
 import tape from "tape";
+import { join } from "path";
 import { StaticInfo } from "../out/gather-info";
 import { getFileContent } from "../out/solc-compile";
 import { isSolcAstNode, sourceSolcRangeFromSrc } from "../out/solc-ast";
 
 tape("gather-info", (t: tape.Test) => {
-  const solidityAst = __dirname + '/resources/ast.json';
+  const solidityAst = join(__dirname, "/resources/ast.json");
   const ast = JSON.parse(getFileContent(solidityAst));
 
   const staticInfo = new StaticInfo(ast);
@@ -57,25 +58,24 @@ tape("gather-info", (t: tape.Test) => {
   });
 
   t.test("solcRangeToASTNode", (st: tape.Test) => {
-      const solidityPath = __dirname + '/resources/MetaCoin.json';
-      const solidityJSON = JSON.parse(getFileContent(solidityPath));
-      const staticInfo = new StaticInfo(solidityJSON.ast);
-      for (const tup of [["346:34:1", "VariableDeclaration"],  // exact
-			 ["346:25:1", "Mapping"], //exact
-			 ["346:24:1", "Mapping"],   // in range
-			 ["346:26:1", "VariableDeclaration"],
-			 ["347:26:1", "VariableDeclaration"],
-			 ["347:24:1", "Mapping"]]) {
-	  const solcRange = sourceSolcRangeFromSrc(tup[0]);
-	  const astNode = staticInfo.solcRangeToAstNode(solcRange);
-	  if (astNode === null) {
+    const solidityPath = join(__dirname, "/resources/MetaCoin.json");
+    const solidityJSON = JSON.parse(getFileContent(solidityPath));
+    const staticInfo = new StaticInfo(solidityJSON.ast);
+    for (const tup of [["346:34:1", "VariableDeclaration"],  // exact
+			                 ["346:25:1", "Mapping"], //exact
+			                 ["346:24:1", "Mapping"],   // in range
+			                 ["346:26:1", "VariableDeclaration"],
+			                 ["347:26:1", "VariableDeclaration"],
+			                 ["347:24:1", "Mapping"]]) {
+	    const solcRange = sourceSolcRangeFromSrc(tup[0]);
+	    const astNode = staticInfo.solcRangeToAstNode(solcRange);
+	    if (astNode === null) {
 	      st.ok(false, `Should have found AST node for ${tup[0]}`);
-	  } else {
+	    } else {
 	      st.strictEqual(isSolcAstNode(astNode), true, `should get AST for "${tup[0]}"`);
 	      st.strictEqual(astNode.nodeType, tup[1], `should get AST node of type ${tup[1]} for "${tup[0]}"`);
-	  }
-      }
-      st.end();
+	    }
+    }
+    st.end();
   });
-
 });
