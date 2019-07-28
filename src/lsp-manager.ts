@@ -3,7 +3,7 @@
    Note we are not a Language Server, but just are implementing the library that would be used for
    such a server.
 **/
-import { compileSolc } from "./solc-compile";
+import { compileSolc, getFileContent } from "./solc-compile";
 import { truffleConfSnippetDefault } from "./trufstuf";
 
 // import * as solc from "solc";
@@ -98,12 +98,14 @@ export class LspManager {
       this.fileInfo.sourceList = sourceList;
 
       if ("ast" in compiled.sources[filePath]) {
+        let fileContent = (filePath === solcPath) ? content : getFileContent(filePath);
+
         this.fileInfo[filePath] = {
           ast: sourceInfo.ast,
-          content,
+          content: fileContent,
           sourceList,
           fileIndex: sourceInfo.id,
-          sourceMapping: new SourceMappings(content),
+          sourceMapping: new SourceMappings(fileContent),
           staticInfo: new StaticInfo(sourceInfo.ast)
         };
       }
