@@ -12,6 +12,15 @@ import { dirname, isAbsolute, join, normalize, sep } from "path";
 import { truffleConfSnippetNormalize, truffleConfSnippetDefault } from "./trufstuf";
 
 /**
+  * remove some of the jargon from nodejs fs.stat messages
+*/
+function fixupStatMessage(e: any) {
+  if (e.message.startsWith("ENOENT: n")) {
+    e.message = e.message.replace("ENOENT: n", "N").replace(", stat ", ". Looked for: ");
+  }
+}
+
+/**
   * Reads (Solidity) file passed and returns the
   * contents of that file.
   *
@@ -51,6 +60,12 @@ export async function compileSolc(content: string, sourcePath: string, logger: a
   truffleConfSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 
+  interface ImportRemap {
+    [importName: string]: string
+  }
+
+  let importRemap: ImportRemap = {};
+
   /**
    * Called back by the solc when there is an import.
    * We currently handle NPM local and global packages such as from
@@ -71,30 +86,33 @@ export async function compileSolc(content: string, sourcePath: string, logger: a
           }
         } catch(_) { };
       }
-	    pathName = normalize(pathName);
+	    let pathNameResolved = normalize(pathName);
 
       try {
-        const stat = statSync(pathName);
+        const stat = statSync(pathNameResolved);
         if (!stat.isFile() && truffleConfSnippet.truffle_directory) {
           // Do we have an NPM-installed local or global directory?
           const dir = resolveNPM(pathName, truffleConfSnippet.truffle_directory);
           // the final directory name is repeated, so remove that.
-          pathName = join(dirname(dir), pathName);
+          pathName = join(dirname(dir), pathNameResolved);
         }
       } catch {
         // Do we have an NPM-installed local or global directory?
         if (truffleConfSnippet.truffle_directory) {
-          const dir = resolveNPM(pathName, truffleConfSnippet.truffle_directory);
+          const dir = resolveNPM(pathNameResolved, truffleConfSnippet.truffle_directory);
           // the final directory name is repeated, so remove that.
-          pathName = join(dirname(dir), pathName);
+          pathNameResolved = join(dirname(dir), pathNameResolved);
         } else {
           return { error: "Not an NPM import" }
         }
       }
+      if (pathName !== pathNameResolved)
+        importRemap[pathName] = pathNameResolved;
       return {
-        contents: getFileContent(pathName)
+        contents: getFileContent(pathNameResolved)
       };
     } catch (e) {
+      fixupStatMessage(e);
       return { error: `${e.message}` }
     }
   }
@@ -129,7 +147,17 @@ export async function compileSolc(content: string, sourcePath: string, logger: a
   }
 
   try {
-    return solc.compile(JSON.stringify(solcStandardInput), getImports);
+    const compiledJSON = solc.compile(JSON.stringify(solcStandardInput), getImports);
+    const compiled = JSON.parse(compiledJSON);
+    // Fill in resolved input in sources.
+    for (const source of Object.keys(compiled.sources)) {
+      if (source in importRemap) {
+        const remapName = importRemap[source];
+        delete Object.assign(compiled.sources, {[remapName]: compiled.sources[source]})[source];
+        compiled.sources[remapName].importName = source;
+      }
+    }
+    return compiled;
   } catch (err) {
     logger.log(err);
     return null;

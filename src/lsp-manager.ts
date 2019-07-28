@@ -71,72 +71,65 @@ export class LspManager {
 
     const compiled = await compileSolc(content, solcPath, logger, truffleConfSnippet);
     if (!compiled) return;
-    try {
-      const compiledJSON = JSON.parse(compiled);
 
-      // Compute sourceList, the list of sources seen.
-      let sourceList: Array<string> = [];
-      for (const filePath of Object.keys(compiledJSON.sources)) {
-        const source = compiledJSON.sources[filePath];
-        if ("ast" in source) {
-          const fileIndex = source.id;
-          sourceList[fileIndex] = filePath;
-        }
+    // Compute sourceList, the list of sources seen.
+    let sourceList: Array<string> = [];
+    for (const filePath of Object.keys(compiled.sources)) {
+      const source = compiled.sources[filePath];
+      if ("ast" in source) {
+        const fileIndex = source.id;
+        sourceList[fileIndex] = filePath;
       }
-      compiledJSON.sourceList = sourceList;
+    }
+    compiled.sourceList = sourceList;
 
-      // Fill in gather-info data for *all* imported sources we hit it
-      // compilation. Down the line we probably will need to track dependencies
-      // And what to do when a dependency changes. Do we recompile code that depends on it?
-      // Or wait until we switch to that file?
-      // Do we note the "root" contract?
-      // Since AST id's are sequentical, the id imported contracts can change depending
-      // on where you started from.
-      for (const filePath of Object.keys(compiledJSON.sources)) {
-        const sourceInfo = compiledJSON.sources[filePath];
+    // Fill in gather-info data for *all* imported sources we hit it
+    // compilation. Down the line we probably will need to track dependencies
+    // And what to do when a dependency changes. Do we recompile code that depends on it?
+    // Or wait until we switch to that file?
+    // Do we note the "root" contract?
+    // Since AST id's are sequentical, the id imported contracts can change depending
+    // on where you started from.
+    for (const filePath of Object.keys(compiled.sources)) {
+      const sourceInfo = compiled.sources[filePath];
 
-        // Note: different projects should have their own LSP manager to reduce
-        // sharing of imported contracts.
-        this.fileInfo.sourceList = sourceList;
+      // Note: different projects should have their own LSP manager to reduce
+      // sharing of imported contracts.
+      this.fileInfo.sourceList = sourceList;
 
-        if ("ast" in compiledJSON.sources[filePath]) {
-          this.fileInfo[filePath] = {
-            ast: sourceInfo.ast,
-            content,
-            sourceList,
-            fileIndex: sourceInfo.id,
-            sourceMapping: new SourceMappings(content),
-            staticInfo: new StaticInfo(sourceInfo.ast)
-          };
-        }
+      if ("ast" in compiled.sources[filePath]) {
+        this.fileInfo[filePath] = {
+          ast: sourceInfo.ast,
+          content,
+          sourceList,
+          fileIndex: sourceInfo.id,
+          sourceMapping: new SourceMappings(content),
+          staticInfo: new StaticInfo(sourceInfo.ast)
+        };
       }
+    }
 
-      if ("contracts" in compiledJSON) {
-        this.fileInfo[solcPath].contracts = compiledJSON.contracts;
-      }
+    if ("contracts" in compiled) {
+      this.fileInfo[solcPath].contracts = compiled.contracts;
+    }
 
-      // Down the line we'll do better about tracking dependecies. For now
-      // we'll just say that sources other than "solcPath" which was given, are dependencies
-      // of "solcPath"
+    // Down the line we'll do better about tracking dependecies. For now
+    // we'll just say that sources other than "solcPath" which was given, are dependencies
+    // of "solcPath"
 
-      // Add solcIds from imported sources into imported-from solcIds.
-      if (solcPath in this.fileInfo) {
-        this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
+    // Add solcIds from imported sources into imported-from solcIds.
+    if (solcPath in this.fileInfo) {
+      this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
 
-        for (const filePath of this.fileInfo[solcPath].imported) {
-          this.fileInfo[solcPath].staticInfo.solcIds = {
-            ... this.fileInfo[solcPath].staticInfo.solcIds,
-            ... this.fileInfo[filePath].staticInfo.solcIds
-          };
+      for (const filePath of this.fileInfo[solcPath].imported) {
+        this.fileInfo[solcPath].staticInfo.solcIds = {
+          ... this.fileInfo[solcPath].staticInfo.solcIds,
+          ... this.fileInfo[filePath].staticInfo.solcIds
         };
       };
+    };
 
-      return compiledJSON;
-    } catch (err) {
-      // FIXME: fill in something more meaningful
-      logger.log(err);
-      return {};
-    }
+    return compiled;
   }
 
   /**
