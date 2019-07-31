@@ -76,11 +76,10 @@ export class StaticInfo {
 
   id2uses: SolcIdMapList = {};  // Object.keys(Retrive a solc AST node id for a given id
 
-  dotFields = {};  // Map of things that can come after a dot. The key is the parent name
   arrays: any = new Set([]);   // Set of names of array variables
   bytes: any = new Set([]);   // Set of names of variables of the `bytes` type.
   enums:  any = {};   // Map of enum name to its literals.
-
+  structs: any = {}; // Map of struct definitions
 
   constructor(ast: SolcAstNode) {
     this.gatherInfo(ast);
@@ -109,17 +108,7 @@ export class StaticInfo {
       }
     }
 
-    if ("MemberAccess" === node.nodeType) {
-      // FIXME: remove this.
-      if (node.expression && node.expression.name) {
-        const name: string = node.expression.name;
-        const memberValue = node.memberName;
-        if (!(name in this.dotFields))
-          this.dotFields[name] = new Set([memberValue]);
-        else
-          this.dotFields[name].add(memberValue);
-      }
-    } else if ("ArrayTypeName" === node.nodeType) {
+    if ("ArrayTypeName" === node.nodeType) {
         const parent = node.parent;
         if (parent && parent.nodeType == "VariableDeclaration") {
             const parentName: string = parent.name;
@@ -133,6 +122,8 @@ export class StaticInfo {
       }
     } else if ("EnumDefinition" === node.nodeType) {
       this.enums[node.name] = node.members.map(m => m.name);
+    } else if ("StructDefinition" === node.nodeType) {
+      this.structs[node.name] = node.members.map(m => m.name);
     }
   }
 

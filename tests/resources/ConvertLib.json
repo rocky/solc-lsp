@@ -32,7 +32,7 @@
   "source": "pragma solidity >=0.4.22 <0.6.0;\n\nlibrary ConvertLib{\n\tfunction convert(uint amount,uint conversionRate) public pure returns (uint convertedAmount)\n\t{\n\t\treturn amount * conversionRate;\n\t}\n}\n",
   "sourcePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/ConvertLib.sol",
   "ast": {
-    "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/ConvertLib.sol",
+    "absolutePath": "contracts/ConvertLib.sol",
     "exportedSymbols": {
       "ConvertLib": [
         16
@@ -240,7 +240,7 @@
     "src": "0:190:0"
   },
   "legacyAST": {
-    "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/ConvertLib.sol",
+    "absolutePath": "contracts/ConvertLib.sol",
     "exportedSymbols": {
       "ConvertLib": [
         16

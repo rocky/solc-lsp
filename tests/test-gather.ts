@@ -67,7 +67,6 @@ tape("gather-info", (t: tape.Test) => {
 			                 ["346:26:1", "VariableDeclaration"],
 			                 ["347:26:1", "VariableDeclaration"],
 			                 ["347:24:1", "Mapping"]]) {
-      debugger;
 	    const solcRange = sourceSolcRangeFromSrc(tup[0]);
 	    const astNode = staticInfo.solcRangeToAstNode(solcRange);
 	    if (astNode === null) {
@@ -79,4 +78,19 @@ tape("gather-info", (t: tape.Test) => {
     }
     st.end();
   });
+
+  t.test("StaticInfoFields", (st: tape.Test) => {
+    const solidityPath = join(__dirname, "/resources/lang-features.json");
+    const solidityJSON = JSON.parse(getFileContent(solidityPath));
+    const staticInfo = new StaticInfo(solidityJSON);
+
+    const arrays = new Set(["data", "ids"]);
+    st.deepEqual(staticInfo.arrays,  arrays);
+    const bytes = new Set(["data"]);
+    st.deepEqual(staticInfo.bytes, bytes);
+    st.deepEqual(staticInfo.enums, { MyEnum: [ 'One', 'Two' ] });
+    st.deepEqual(staticInfo.structs, { Snapshots: [ 'ids' ] });
+    st.end();
+  });
+
 });

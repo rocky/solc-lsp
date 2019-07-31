@@ -1,0 +1,579 @@
+{
+  "absolutePath": "solc-lsp/tests/resources/lang-features.sol",
+  "exportedSymbols": {
+    "ArrayContract": [
+      14
+    ],
+    "BytesContract": [
+      41
+    ],
+    "EnumContract": [
+      29
+    ],
+    "Interface": [
+      18
+    ],
+    "StructContract": [
+      50
+    ]
+  },
+  "id": 51,
+  "nodeType": "SourceUnit",
+  "nodes": [
+    {
+      "id": 1,
+      "literals": [
+        "solidity",
+        ">=",
+        "0.5",
+        ".10"
+      ],
+      "nodeType": "PragmaDirective",
+      "src": "95:25:0"
+    },
+    {
+      "baseContracts": [],
+      "contractDependencies": [],
+      "contractKind": "contract",
+      "documentation": null,
+      "fullyImplemented": true,
+      "id": 14,
+      "linearizedBaseContracts": [
+        14
+      ],
+      "name": "ArrayContract",
+      "nodeType": "ContractDefinition",
+      "nodes": [
+        {
+          "constant": false,
+          "id": 4,
+          "name": "data",
+          "nodeType": "VariableDeclaration",
+          "scope": 14,
+          "src": "148:11:0",
+          "stateVariable": true,
+          "storageLocation": "default",
+          "typeDescriptions": {
+            "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+            "typeString": "uint256[]"
+          },
+          "typeName": {
+            "baseType": {
+              "id": 2,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "148:4:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "id": 3,
+            "length": null,
+            "nodeType": "ArrayTypeName",
+            "src": "148:6:0",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+              "typeString": "uint256[]"
+            }
+          },
+          "value": null,
+          "visibility": "internal"
+        },
+        {
+          "body": {
+            "id": 12,
+            "nodeType": "Block",
+            "src": "186:70:0",
+            "statements": [
+              {
+                "expression": {
+                  "argumentTypes": null,
+                  "arguments": [],
+                  "expression": {
+                    "argumentTypes": [],
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 7,
+                      "name": "data",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4,
+                      "src": "192:4:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_uint256_$dyn_storage",
+                        "typeString": "uint256[] storage ref"
+                      }
+                    },
+                    "id": 9,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "pop",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "192:8:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_function_arraypop_nonpayable$__$returns$__$",
+                      "typeString": "function ()"
+                    }
+                  },
+                  "id": 10,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": false,
+                  "kind": "functionCall",
+                  "lValueRequested": false,
+                  "names": [],
+                  "nodeType": "FunctionCall",
+                  "src": "192:10:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_tuple$__$",
+                    "typeString": "tuple()"
+                  }
+                },
+                "id": 11,
+                "nodeType": "ExpressionStatement",
+                "src": "192:10:0"
+              }
+            ]
+          },
+          "documentation": null,
+          "id": 13,
+          "implemented": true,
+          "kind": "function",
+          "modifiers": [],
+          "name": "test",
+          "nodeType": "FunctionDefinition",
+          "parameters": {
+            "id": 5,
+            "nodeType": "ParameterList",
+            "parameters": [],
+            "src": "176:2:0"
+          },
+          "returnParameters": {
+            "id": 6,
+            "nodeType": "ParameterList",
+            "parameters": [],
+            "src": "186:0:0"
+          },
+          "scope": 14,
+          "src": "163:93:0",
+          "stateMutability": "nonpayable",
+          "superFunction": null,
+          "visibility": "public"
+        }
+      ],
+      "scope": 51,
+      "src": "121:137:0"
+    },
+    {
+      "baseContracts": [],
+      "contractDependencies": [],
+      "contractKind": "contract",
+      "documentation": null,
+      "fullyImplemented": true,
+      "id": 18,
+      "linearizedBaseContracts": [
+        18
+      ],
+      "name": "Interface",
+      "nodeType": "ContractDefinition",
+      "nodes": [
+        {
+          "canonicalName": "Interface.MyEnum",
+          "id": 17,
+          "members": [
+            {
+              "id": 15,
+              "name": "One",
+              "nodeType": "EnumValue",
+              "src": "297:3:0"
+            },
+            {
+              "id": 16,
+              "name": "Two",
+              "nodeType": "EnumValue",
+              "src": "302:3:0"
+            }
+          ],
+          "name": "MyEnum",
+          "nodeType": "EnumDefinition",
+          "src": "283:24:0"
+        }
+      ],
+      "scope": 51,
+      "src": "260:71:0"
+    },
+    {
+      "baseContracts": [],
+      "contractDependencies": [],
+      "contractKind": "contract",
+      "documentation": null,
+      "fullyImplemented": true,
+      "id": 29,
+      "linearizedBaseContracts": [
+        29
+      ],
+      "name": "EnumContract",
+      "nodeType": "ContractDefinition",
+      "nodes": [
+        {
+          "body": {
+            "id": 27,
+            "nodeType": "Block",
+            "src": "414:38:0",
+            "statements": [
+              {
+                "expression": {
+                  "argumentTypes": null,
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 23,
+                      "name": "Interface",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 18,
+                      "src": "427:9:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_Interface_$18_$",
+                        "typeString": "type(contract Interface)"
+                      }
+                    },
+                    "id": 24,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "MyEnum",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 17,
+                    "src": "427:16:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_type$_t_enum$_MyEnum_$17_$",
+                      "typeString": "type(enum Interface.MyEnum)"
+                    }
+                  },
+                  "id": 25,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "memberName": "One",
+                  "nodeType": "MemberAccess",
+                  "referencedDeclaration": null,
+                  "src": "427:20:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_MyEnum_$17",
+                    "typeString": "enum Interface.MyEnum"
+                  }
+                },
+                "functionReturnParameters": 22,
+                "id": 26,
+                "nodeType": "Return",
+                "src": "420:27:0"
+              }
+            ]
+          },
+          "documentation": null,
+          "id": 28,
+          "implemented": true,
+          "kind": "function",
+          "modifiers": [],
+          "name": "test",
+          "nodeType": "FunctionDefinition",
+          "parameters": {
+            "id": 19,
+            "nodeType": "ParameterList",
+            "parameters": [],
+            "src": "372:2:0"
+          },
+          "returnParameters": {
+            "id": 22,
+            "nodeType": "ParameterList",
+            "parameters": [
+              {
+                "constant": false,
+                "id": 21,
+                "name": "",
+                "nodeType": "VariableDeclaration",
+                "scope": 28,
+                "src": "396:16:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_MyEnum_$17",
+                  "typeString": "enum Interface.MyEnum"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 20,
+                  "name": "Interface.MyEnum",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 17,
+                  "src": "396:16:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_MyEnum_$17",
+                    "typeString": "enum Interface.MyEnum"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "src": "395:18:0"
+          },
+          "scope": 29,
+          "src": "359:93:0",
+          "stateMutability": "pure",
+          "superFunction": null,
+          "visibility": "public"
+        }
+      ],
+      "scope": 51,
+      "src": "333:121:0"
+    },
+    {
+      "baseContracts": [],
+      "contractDependencies": [],
+      "contractKind": "contract",
+      "documentation": null,
+      "fullyImplemented": true,
+      "id": 41,
+      "linearizedBaseContracts": [
+        41
+      ],
+      "name": "BytesContract",
+      "nodeType": "ContractDefinition",
+      "nodes": [
+        {
+          "constant": false,
+          "id": 31,
+          "name": "data",
+          "nodeType": "VariableDeclaration",
+          "scope": 41,
+          "src": "485:10:0",
+          "stateVariable": true,
+          "storageLocation": "default",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes_storage",
+            "typeString": "bytes"
+          },
+          "typeName": {
+            "id": 30,
+            "name": "bytes",
+            "nodeType": "ElementaryTypeName",
+            "src": "485:5:0",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes_storage_ptr",
+              "typeString": "bytes"
+            }
+          },
+          "value": null,
+          "visibility": "internal"
+        },
+        {
+          "body": {
+            "id": 39,
+            "nodeType": "Block",
+            "src": "524:74:0",
+            "statements": [
+              {
+                "expression": {
+                  "argumentTypes": null,
+                  "arguments": [],
+                  "expression": {
+                    "argumentTypes": [],
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 34,
+                      "name": "data",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 31,
+                      "src": "532:4:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes_storage",
+                        "typeString": "bytes storage ref"
+                      }
+                    },
+                    "id": 36,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "pop",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "532:8:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_function_arraypop_nonpayable$__$returns$__$",
+                      "typeString": "function ()"
+                    }
+                  },
+                  "id": 37,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": false,
+                  "kind": "functionCall",
+                  "lValueRequested": false,
+                  "names": [],
+                  "nodeType": "FunctionCall",
+                  "src": "532:10:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_tuple$__$",
+                    "typeString": "tuple()"
+                  }
+                },
+                "id": 38,
+                "nodeType": "ExpressionStatement",
+                "src": "532:10:0"
+              }
+            ]
+          },
+          "documentation": null,
+          "id": 40,
+          "implemented": true,
+          "kind": "function",
+          "modifiers": [],
+          "name": "test",
+          "nodeType": "FunctionDefinition",
+          "parameters": {
+            "id": 32,
+            "nodeType": "ParameterList",
+            "parameters": [],
+            "src": "514:2:0"
+          },
+          "returnParameters": {
+            "id": 33,
+            "nodeType": "ParameterList",
+            "parameters": [],
+            "src": "524:0:0"
+          },
+          "scope": 41,
+          "src": "501:97:0",
+          "stateMutability": "nonpayable",
+          "superFunction": null,
+          "visibility": "public"
+        }
+      ],
+      "scope": 51,
+      "src": "456:144:0"
+    },
+    {
+      "baseContracts": [],
+      "contractDependencies": [],
+      "contractKind": "contract",
+      "documentation": null,
+      "fullyImplemented": true,
+      "id": 50,
+      "linearizedBaseContracts": [
+        50
+      ],
+      "name": "StructContract",
+      "nodeType": "ContractDefinition",
+      "nodes": [
+        {
+          "canonicalName": "StructContract.Snapshots",
+          "id": 45,
+          "members": [
+            {
+              "constant": false,
+              "id": 44,
+              "name": "ids",
+              "nodeType": "VariableDeclaration",
+              "scope": 45,
+              "src": "659:13:0",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                "typeString": "uint256[]"
+              },
+              "typeName": {
+                "baseType": {
+                  "id": 42,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "659:7:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "id": 43,
+                "length": null,
+                "nodeType": "ArrayTypeName",
+                "src": "659:9:0",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                  "typeString": "uint256[]"
+                }
+              },
+              "value": null,
+              "visibility": "internal"
+            }
+          ],
+          "name": "Snapshots",
+          "nodeType": "StructDefinition",
+          "scope": 50,
+          "src": "632:47:0",
+          "visibility": "public"
+        },
+        {
+          "constant": false,
+          "id": 49,
+          "name": "_accountBalanceSnapshots",
+          "nodeType": "VariableDeclaration",
+          "scope": 50,
+          "src": "741:63:0",
+          "stateVariable": true,
+          "storageLocation": "default",
+          "typeDescriptions": {
+            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$45_storage_$",
+            "typeString": "mapping(address => struct StructContract.Snapshots)"
+          },
+          "typeName": {
+            "id": 48,
+            "keyType": {
+              "id": 46,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "750:7:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "nodeType": "Mapping",
+            "src": "741:30:0",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$45_storage_$",
+              "typeString": "mapping(address => struct StructContract.Snapshots)"
+            },
+            "valueType": {
+              "contractScope": null,
+              "id": 47,
+              "name": "Snapshots",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 45,
+              "src": "761:9:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Snapshots_$45_storage_ptr",
+                "typeString": "struct StructContract.Snapshots"
+              }
+            }
+          },
+          "value": null,
+          "visibility": "private"
+        }
+      ],
+      "scope": 51,
+      "src": "602:205:0"
+    }
+  ],
+  "src": "95:713:0"
+}

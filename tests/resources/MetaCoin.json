@@ -98,7 +98,7 @@
   "source": "pragma solidity >=0.4.22 <0.6.0;\n\nimport \"./ConvertLib.sol\";\n\n// This is just a simple example of a coin-like contract.\n// It is not standards compatible and cannot be expected to talk to other\n// coin/token contracts. If you want to create a standards-compliant\n// token, see: https://github.com/ConsenSys/Tokens. Cheers!\n\ncontract MetaCoin1 {\n\tmapping (address => uint) balances;\n\n\tevent Transfer(address indexed _from, address indexed _to, uint256 _value);\n\n\tconstructor() public {\n\t\tbalances[tx.origin] = 10000;\n\t}\n\n\tfunction sendCoin(address receiver, uint amount) public returns(bool sufficient) {\n\t\tif (balances[msg.sender] < amount) return false;\n\t\tbalances[msg.sender] -= amount;\n\t\tbalances[receiver] += amount;\n\t\temit Transfer(msg.sender, receiver, amount);\n\t\treturn true;\n\t}\n\n\tfunction getBalanceInEth(address addr) public view returns(uint){\n\t\treturn ConvertLib.convert(getBalance(addr),2);\n\t}\n\n\tfunction getBalance(address addr) public view returns(uint) {\n\t\treturn balances[addr];\n\t}\n}\n",
   "sourcePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/MetaCoin.sol",
   "ast": {
-    "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/MetaCoin.sol",
+    "absolutePath": "MetaCoin.sol",
     "exportedSymbols": {
       "MetaCoin1": [
         112
@@ -122,7 +122,7 @@
         "src": "0:32:1"
       },
       {
-        "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/ConvertLib.sol",
+        "absolutePath": "ConvertLib.sol",
         "file": "./ConvertLib.sol",
         "id": 19,
         "nodeType": "ImportDirective",
@@ -1296,7 +1296,7 @@
     "src": "0:1000:1"
   },
   "legacyAST": {
-    "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/MetaCoin.sol",
+    "absolutePath": "contracts/MetaCoin.sol",
     "exportedSymbols": {
       "MetaCoin1": [
         112
@@ -1320,7 +1320,7 @@
         "src": "0:32:1"
       },
       {
-        "absolutePath": "/home/rocky/truffle/mythjs-should-detect/bernhard_medium_post/contracts/ConvertLib.sol",
+        "absolutePath": "ConvertLib.sol",
         "file": "./ConvertLib.sol",
         "id": 19,
         "nodeType": "ImportDirective",
