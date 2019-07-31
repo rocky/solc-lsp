@@ -8,6 +8,7 @@ export declare interface SolcAstWalker {
 /**
  * Crawl the given AST through the function walk(ast, callback)
  */
+
 /**
  * visit all the AST nodes
  *
@@ -23,6 +24,9 @@ export declare interface SolcAstWalker {
  *   const astWalker = new SolcAstWalker();
  *   astWalker.addListener("node", listener);
  *
+ * The callback is called post-order, that is, _after_ all children have
+ * been visited. We do this so that the callback has available parent and
+ * children nodes.
  */
 
 export class SolcAstWalker extends EventEmitter {
@@ -32,10 +36,11 @@ export class SolcAstWalker extends EventEmitter {
     if (isSolcAstNode(ast)) {
       // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
       this.emit("node", ast);
-      callback(ast);
       for (const child of this.getChildren(ast)) {
         this.walkInternal(child, callback);
       }
+      // do this last so that parent and children are available.
+      callback(ast);
     }
   }
 
@@ -58,6 +63,7 @@ export class SolcAstWalker extends EventEmitter {
       const node: any = astItem[field];
       if (isSolcAstNode(node)) {
         children.push(node);
+        node.parent = astItem;
       } else if (Array.isArray(node)) {
         for (let child of node) {
           if (isSolcAstNode(child)) {

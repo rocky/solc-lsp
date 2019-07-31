@@ -76,6 +76,11 @@ export class StaticInfo {
 
   id2uses: SolcIdMapList = {};  // Object.keys(Retrive a solc AST node id for a given id
 
+  dotFields = {};  // Map of things that can come after a dot. The key is the parent name
+  arrays: any = new Set([]);   // Set of array names.
+  enums:  any = {};   // Map of enum name to its literals.
+
+
   constructor(ast: SolcAstNode) {
     this.gatherInfo(ast);
   }
@@ -101,6 +106,27 @@ export class StaticInfo {
           this.id2uses[declId] = [node];
         }
       }
+    }
+
+    if ("MemberAccess" === node.nodeType) {
+      // FIXME: remove this.
+      if (node.expression && node.expression.name) {
+        const name: string = node.expression.name;
+        const memberValue = node.memberName;
+        if (!(name in this.dotFields))
+          this.dotFields[name] = new Set([memberValue]);
+        else
+          this.dotFields[name].add(memberValue);
+      }
+    } else if ("ArrayTypeName" === node.nodeType ||
+               node.name == "bytes") {
+	    const parent = node.parent;
+	    if (parent && parent.nodeType == "VariableDeclaration") {
+        const parentName: string = parent.name;
+        this.arrays.add(parentName);
+      }
+    } else if ("EnumDefinition" === node.nodeType) {
+      this.enums[node.name] = node.members.map(m => m.name);
     }
   }
 

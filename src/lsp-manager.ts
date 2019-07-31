@@ -19,6 +19,9 @@ interface LspManagerConfig {
     readonly useCache: boolean;
 }
 
+// FIXME: create an interface with fileInfo stuff.
+export type FileInfo = any;
+
 /* Here we have barebones configuration.
 */
 const defaultConfig = {
@@ -32,7 +35,7 @@ const defaultConfig = {
 export class LspManager {
 
   config: LspManagerConfig = { ...defaultConfig };
-  fileInfo: any; // FIXME: create an interface of fileInfo stuff.
+  fileInfo: FileInfo;
 
   constructor(config = defaultConfig) {
     this.config = config;
