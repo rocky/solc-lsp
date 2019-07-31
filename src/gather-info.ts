@@ -120,14 +120,14 @@ export class StaticInfo {
           this.dotFields[name].add(memberValue);
       }
     } else if ("ArrayTypeName" === node.nodeType) {
-	const parent = node.parent;
-	if (parent && parent.nodeType == "VariableDeclaration") {
+        const parent = node.parent;
+        if (parent && parent.nodeType == "VariableDeclaration") {
             const parentName: string = parent.name;
             this.arrays.add(parentName);
-	}
+        }
     } else if (node.name == "bytes") {
-	const parent = node.parent;
-	if (parent && parent.nodeType == "VariableDeclaration") {
+        const parent = node.parent;
+        if (parent && parent.nodeType == "VariableDeclaration") {
         const parentName: string = parent.name;
         this.bytes.add(parentName);
       }
@@ -157,22 +157,27 @@ export class StaticInfo {
     const startOffset = starts[lb];
     if (this.startOffset.list[startOffset]) {
       /* We want smallest length for this start address, that covers
-   the range.  But this can be subtle. Consider:
+         the range.  But this can be subtle. Consider:
 
-   address owner = msg.sender;
-   ^^^^^^^ type name
-   ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
-                   ^ we want info about here
+           address owner = msg.sender;
+           ^^^^^^^ type name
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
+                          ^ we want info about here
 
          Taking the shortest string that starts at the beginning of
-   the line (here, a type name) is wrong. We also need to check
-   that it also spans where we are inside the variable
-   declaration.
+         the line (here, a type name) is wrong. We also need to check
+         that it also spans where we are inside the variable
+         declaration.
       */
       // TODO: parameterize or pass a condition to look for?
-      const minTup = this.startOffset.list[startOffset]
-        .reduce((minTup, tup) =>
-          (minTup.length >= tup.length && (startOffset + tup.length >= offset) ? tup : minTup));
+      let minTup: StartIdPair | null = null;
+      for (const tup of this.startOffset.list[startOffset]) {
+        if (startOffset + tup.length > offset) {
+          if (minTup == null || minTup.length > tup.length)
+            minTup = tup;
+        }
+      }
+      if (minTup == null) return null;
       const astNode = this.solcIds[minTup.id];
       // this.startOffset.cache[offset] = astNode;
       return astNode;
@@ -192,25 +197,31 @@ export class StaticInfo {
     const startOffset = starts[lb];
     if (this.startOffset.list[startOffset]) {
       /* We want smallest length for this start address, that covers
-   the range.  But this can be subtle. Consider:
+         the range.  But this can be subtle. Consider:
 
-   address owner = msg.sender;
-   ^^^^^^^ type name
-   ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
-                   ^ we want info about here
+         address owner = msg.sender;
+         ^^^^^^^ type name
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^ Variable Declaration
+                         ^ we want info about here
 
          Taking the shortest string that starts at the beginning of
-   the line (here, a type name) is wrong. We also need to check
-   that it also spans where we are inside the variable
-   declaration.
+         the line (here, a type name) is wrong. We also need to check
+         that it also spans where we are inside the variable
+         declaration.
       */
       // TODO: parameterize or pass a condition to look for?
 
-      const minTup = this.startOffset.list[startOffset]
-        .reduce((minTup, tup) =>
-          (minTup.length >= tup.length && (startOffset + tup.length >= endOffset) ? tup : minTup));
+      let minTup: StartIdPair | null = null;
+
+      for (const tup of this.startOffset.list[startOffset]) {
+        if (startOffset + tup.length >= endOffset) {
+          if (minTup == null || minTup.length > tup.length)
+            minTup = tup;
+        }
+      }
+      if (minTup == null) return null;
       const astNode = this.solcIds[minTup.id];
-      // this.startOffset.cache[range] = astNode;
+      // this.startOffset.cache[offset] = astNode;
       return astNode;
     }
     return null;
