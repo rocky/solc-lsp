@@ -8,7 +8,7 @@ const util = require("util");
 const solcCompile = require("../out/solc-compile"); // Or something like this
 
 if (process.argv.length < 2) {
-    console.log('Usage: ' + __filename + ' <solidity_file>');
+    console.log('Usage: ' + __filename + ' <solidity_json>');
     process.exit(-1);
 }
 

@@ -7,15 +7,15 @@ const gather = require("../out/gather-info");
 // const solidityAst = __dirname + "/../tests/resources/ast.json";
 
 if (process.argv.length !== 3) {
-    console.log('Usage: ' + __filename + ' <solidity_file>');
+    console.log('Usage: ' + __filename + ' <solidity_json>');
     process.exit(-1);
 }
 
 solidityAst = process.argv[2];
 
 const ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
-
 debugger;
+
 const g = new gather.StaticInfo(ast);
 const util = require("util");
 const x = util.inspect(g, {depth: 4});

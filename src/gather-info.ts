@@ -3,9 +3,15 @@
  * includng "src' information.
  */
 
+import { readdirSync } from "fs";
+import { join } from "path";
 import { SolcRange, SolcAstNode } from "./solc-ast/types";
 import { SolcAstWalker } from "./solc-ast/walker";
 import { sourceSolcRangeFromSrc, findLowerBound } from "./solc-ast/source-mappings";
+
+export interface NodeTypeCallbackFn {
+  fn: (staticInfo: StaticInfo, node: SolcAstNode) => void
+};
 
 /* StartIdPair is an entry in a StartList which gives an AST id number
    and the length part of its src range. It
@@ -56,6 +62,16 @@ export interface SolcIdMapList {
   [id: number]: SolcAstList;
 }
 
+/* Maps a solc name to a list of strings a list. Used for enum name to
+   its literals, or struct to its members, for example. */
+export interface SolcNameToStrList {
+  [name: string]: Array<string>;
+}
+
+interface NodeTypeCallbackFns {
+  [fn: string]: NodeTypeCallbackFn;
+};
+
 export class StaticInfo {
   startOffset: StartList = {
     list: [],
@@ -76,13 +92,30 @@ export class StaticInfo {
 
   id2uses: SolcIdMapList = {};  // Object.keys(Retrive a solc AST node id for a given id
 
+  /* Note: these don't take into account scope yet */
   arrays: any = new Set([]);   // Set of names of array variables
   bytes: any = new Set([]);   // Set of names of variables of the `bytes` type.
-  enums:  any = {};   // Map of enum name to its literals.
-  structs: any = {}; // Map of struct definitions
+  enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
+  structs: SolcNameToStrList = {}; // Map of struct definitions
+  nodeTypeCallbackFn: NodeTypeCallbackFns = {};
 
   constructor(ast: SolcAstNode) {
+    this.readNodeTypeCallbacks();
     this.gatherInfo(ast);
+  }
+
+  readNodeTypeCallbacks(): void {
+    const callbackDir = join(__dirname, "./nodetype-callback");
+    const paths = readdirSync(callbackDir);
+    for (const pathName of paths) {
+      const extIndex = pathName.length - 3;
+      if (pathName.substring(extIndex) === ".js") {
+        // console.log(file); // XXX
+        const mod = require(join(callbackDir, pathName));
+        const name = pathName.substr(0, extIndex);
+        this.nodeTypeCallbackFn[name] = mod.register();
+      }
+    }
   }
 
   callbackFn = (node: SolcAstNode) => {
@@ -108,22 +141,15 @@ export class StaticInfo {
       }
     }
 
-    if ("ArrayTypeName" === node.nodeType) {
-        const parent = node.parent;
-        if (parent && parent.nodeType == "VariableDeclaration") {
-            const parentName: string = parent.name;
-            this.arrays.add(parentName);
-        }
-    } else if (node.name == "bytes") {
+    if (node.nodeType in this.nodeTypeCallbackFn) {
+      this.nodeTypeCallbackFn[node.nodeType].fn(this, node);
+    }
+    if (node.name == "bytes") {
         const parent = node.parent;
         if (parent && parent.nodeType == "VariableDeclaration") {
         const parentName: string = parent.name;
         this.bytes.add(parentName);
-      }
-    } else if ("EnumDefinition" === node.nodeType) {
-      this.enums[node.name] = node.members.map(m => m.name);
-    } else if ("StructDefinition" === node.nodeType) {
-      this.structs[node.name] = node.members.map(m => m.name);
+        }
     }
   }
 
