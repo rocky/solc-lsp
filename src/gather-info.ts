@@ -47,7 +47,7 @@ export interface StartList {
   list: StartListMap;
 }
 
-/* Maps a solc "id" field into its SolcASTNode */
+/* Maps a solc "id" field into its SolcAstNode */
 export interface SolcIdMap {
   [id: number]: SolcAstNode;
 }
@@ -57,7 +57,7 @@ export interface SolcIdMap {
 */
 export type SolcAstList = Array<SolcAstNode>;
 
-/* Maps a solc "id" field into  a list of SolcASTNodes */
+/* Maps a solc "id" field into  a list of SolcAstNodes */
 export interface SolcIdMapList {
   [id: number]: SolcAstList;
 }
@@ -68,8 +68,26 @@ export interface SolcNameToStrList {
   [name: string]: Array<string>;
 }
 
+/* Maps a solc name to a list of string. Used for nodeTypes
+   where the only information we want is its name, for example. */
+export interface SolcNameToStr {
+  [name: string]: string;
+}
+
+/* Maps a solc name to a list of string. Used for nodeTypes
+   where the only information we want is its name, for example. */
+export interface NodeTypeToSet {
+  [name: string]: Set<string>;
+}
+
 interface NodeTypeCallbackFns {
   [fn: string]: NodeTypeCallbackFn;
+};
+
+/* Temporary used in walking the AST. */
+interface TempInfo {
+  contractName: string,
+  functionName: string
 };
 
 export class StaticInfo {
@@ -98,6 +116,8 @@ export class StaticInfo {
   enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
   structs: SolcNameToStrList = {}; // Map of struct definitions
   nodeTypeCallbackFn: NodeTypeCallbackFns = {};
+  nodeType: NodeTypeToSet = {};
+  tempInfo: TempInfo = {contractName: "", functionName: ""};
 
   constructor(ast: SolcAstNode) {
     this.readNodeTypeCallbacks();
@@ -141,8 +161,18 @@ export class StaticInfo {
       }
     }
 
-    if (node.nodeType in this.nodeTypeCallbackFn) {
-      this.nodeTypeCallbackFn[node.nodeType].fn(this, node);
+    const nodeType = node.nodeType;
+    if (nodeType in this.nodeTypeCallbackFn) {
+      this.nodeTypeCallbackFn[nodeType].fn(this, node);
+      if (node.name) {
+        if (!this.nodeType[nodeType]) {
+          this.nodeType[nodeType] = new Set([node.name]);
+        } else {
+          this.nodeType[nodeType].add(node.name);
+        }
+      }
+      node.contractName = this.tempInfo.contractName;
+      node.functionName = this.tempInfo.functionName;
     }
     if (node.name == "bytes") {
         const parent = node.parent;

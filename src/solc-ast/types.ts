@@ -64,9 +64,12 @@ export interface SolcAstNode {
   readonly sourceUnit?: number;
   readonly symbolAliases?: Array<string>;
   readonly [x: string]: any;
-  // These are filled in
+
+  // These may be filled in.
   children?: Array<SolcAstNode>;
   parent?: SolcAstNode | null;
+  contractName?: string;
+  functionName?: string;
 }
 
 /* These are attributes of an AST node, which could
