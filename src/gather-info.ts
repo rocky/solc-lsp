@@ -123,13 +123,20 @@ export class StaticInfo {
   /* Note: these don't take into account scope yet */
   arrays: any = new Set([]);   // Set of names of array variables
   bytes: any = new Set([]);   // Set of names of variables of the `bytes` type.
+
   enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
-  fns: ContractFnToSignature = {};
   structs: SolcNameToStrList = {}; // Map of struct definitions
+
+  fns: ContractFnToSignature = {};  // Map of functions, keyed by contract.name to its signature
+  events: ContractFnToSignature = {}; // Map of events keyed by contract.name to its signature
+
   nodeTypeCallbackFnPre: NodeTypeCallbackFns = {};
   nodeTypeCallbackFnPost: NodeTypeCallbackFns = {};
   nodeType: NodeTypeToSet = {};
-  tempInfo: TempInfo = {contractName: "", functionName: ""};
+  tempInfo: TempInfo = {
+    contractName: "",
+    functionName: "" // Note: events are treated like functions here.
+  };
 
   constructor(ast: SolcAstNode) {
     this.readNodeTypeCallbacks();
