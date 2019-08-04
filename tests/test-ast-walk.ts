@@ -27,7 +27,7 @@ tape("SolcASTWalker", (t: tape.Test) => {
 		st.ok(isSolcAstNode(node), "passed an solc AST node");
 	    }
 	    count += 1;
-	});
+	}, null);
 	st.equal(count, astNodeCount, "traverses all AST nodes");
 	st.equal(count, listenCount, "listen called back for AST nodes");
 

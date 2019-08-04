@@ -1,11 +1,11 @@
 {
-  "absolutePath": "solc-lsp/tests/resources/lang-features.sol",
+  "absolutePath": "../tests/resources/lang-features.sol",
   "exportedSymbols": {
     "ArrayContract": [
       14
     ],
     "BytesContract": [
-      41
+      47
     ],
     "EnumContract": [
       29
@@ -14,10 +14,10 @@
       18
     ],
     "StructContract": [
-      50
+      56
     ]
   },
-  "id": 51,
+  "id": 57,
   "nodeType": "SourceUnit",
   "nodes": [
     {
@@ -165,7 +165,7 @@
           "visibility": "public"
         }
       ],
-      "scope": 51,
+      "scope": 57,
       "src": "121:137:0"
     },
     {
@@ -203,7 +203,7 @@
           "src": "283:24:0"
         }
       ],
-      "scope": 51,
+      "scope": 57,
       "src": "260:71:0"
     },
     {
@@ -333,7 +333,7 @@
           "visibility": "public"
         }
       ],
-      "scope": 51,
+      "scope": 57,
       "src": "333:121:0"
     },
     {
@@ -342,9 +342,9 @@
       "contractKind": "contract",
       "documentation": null,
       "fullyImplemented": true,
-      "id": 41,
+      "id": 47,
       "linearizedBaseContracts": [
-        41
+        47
       ],
       "name": "BytesContract",
       "nodeType": "ContractDefinition",
@@ -354,7 +354,7 @@
           "id": 31,
           "name": "data",
           "nodeType": "VariableDeclaration",
-          "scope": 41,
+          "scope": 47,
           "src": "485:10:0",
           "stateVariable": true,
           "storageLocation": "default",
@@ -377,10 +377,61 @@
         },
         {
           "body": {
-            "id": 39,
+            "id": 45,
             "nodeType": "Block",
-            "src": "524:74:0",
+            "src": "538:95:0",
             "statements": [
+              {
+                "expression": {
+                  "argumentTypes": null,
+                  "id": 38,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": false,
+                  "lValueRequested": false,
+                  "leftHandSide": {
+                    "argumentTypes": null,
+                    "id": 36,
+                    "name": "receiver",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 33,
+                    "src": "546:8:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "nodeType": "Assignment",
+                  "operator": "=",
+                  "rightHandSide": {
+                    "argumentTypes": null,
+                    "hexValue": "3130",
+                    "id": 37,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "557:2:0",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_10_by_1",
+                      "typeString": "int_const 10"
+                    },
+                    "value": "10"
+                  },
+                  "src": "546:13:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "id": 39,
+                "nodeType": "ExpressionStatement",
+                "src": "546:13:0"
+              },
               {
                 "expression": {
                   "argumentTypes": null,
@@ -389,18 +440,18 @@
                     "argumentTypes": [],
                     "expression": {
                       "argumentTypes": null,
-                      "id": 34,
+                      "id": 40,
                       "name": "data",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 31,
-                      "src": "532:4:0",
+                      "src": "567:4:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes_storage",
                         "typeString": "bytes storage ref"
                       }
                     },
-                    "id": 36,
+                    "id": 42,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -408,13 +459,13 @@
                     "memberName": "pop",
                     "nodeType": "MemberAccess",
                     "referencedDeclaration": null,
-                    "src": "532:8:0",
+                    "src": "567:8:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_function_arraypop_nonpayable$__$returns$__$",
                       "typeString": "function ()"
                     }
                   },
-                  "id": 37,
+                  "id": 43,
                   "isConstant": false,
                   "isLValue": false,
                   "isPure": false,
@@ -422,46 +473,73 @@
                   "lValueRequested": false,
                   "names": [],
                   "nodeType": "FunctionCall",
-                  "src": "532:10:0",
+                  "src": "567:10:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_tuple$__$",
                     "typeString": "tuple()"
                   }
                 },
-                "id": 38,
+                "id": 44,
                 "nodeType": "ExpressionStatement",
-                "src": "532:10:0"
+                "src": "567:10:0"
               }
             ]
           },
           "documentation": null,
-          "id": 40,
+          "id": 46,
           "implemented": true,
           "kind": "function",
           "modifiers": [],
           "name": "test",
           "nodeType": "FunctionDefinition",
           "parameters": {
-            "id": 32,
+            "id": 34,
             "nodeType": "ParameterList",
-            "parameters": [],
-            "src": "514:2:0"
+            "parameters": [
+              {
+                "constant": false,
+                "id": 33,
+                "name": "receiver",
+                "nodeType": "VariableDeclaration",
+                "scope": 46,
+                "src": "515:14:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                },
+                "typeName": {
+                  "id": 32,
+                  "name": "uint8",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "515:5:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "src": "514:16:0"
           },
           "returnParameters": {
-            "id": 33,
+            "id": 35,
             "nodeType": "ParameterList",
             "parameters": [],
-            "src": "524:0:0"
+            "src": "538:0:0"
           },
-          "scope": 41,
-          "src": "501:97:0",
+          "scope": 47,
+          "src": "501:132:0",
           "stateMutability": "nonpayable",
           "superFunction": null,
           "visibility": "public"
         }
       ],
-      "scope": 51,
-      "src": "456:144:0"
+      "scope": 57,
+      "src": "456:179:0"
     },
     {
       "baseContracts": [],
@@ -469,24 +547,24 @@
       "contractKind": "contract",
       "documentation": null,
       "fullyImplemented": true,
-      "id": 50,
+      "id": 56,
       "linearizedBaseContracts": [
-        50
+        56
       ],
       "name": "StructContract",
       "nodeType": "ContractDefinition",
       "nodes": [
         {
           "canonicalName": "StructContract.Snapshots",
-          "id": 45,
+          "id": 51,
           "members": [
             {
               "constant": false,
-              "id": 44,
+              "id": 50,
               "name": "ids",
               "nodeType": "VariableDeclaration",
-              "scope": 45,
-              "src": "659:13:0",
+              "scope": 51,
+              "src": "694:13:0",
               "stateVariable": false,
               "storageLocation": "default",
               "typeDescriptions": {
@@ -495,19 +573,19 @@
               },
               "typeName": {
                 "baseType": {
-                  "id": 42,
+                  "id": 48,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "659:7:0",
+                  "src": "694:7:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
                   }
                 },
-                "id": 43,
+                "id": 49,
                 "length": null,
                 "nodeType": "ArrayTypeName",
-                "src": "659:9:0",
+                "src": "694:9:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                   "typeString": "uint256[]"
@@ -519,50 +597,50 @@
           ],
           "name": "Snapshots",
           "nodeType": "StructDefinition",
-          "scope": 50,
-          "src": "632:47:0",
+          "scope": 56,
+          "src": "667:47:0",
           "visibility": "public"
         },
         {
           "constant": false,
-          "id": 49,
+          "id": 55,
           "name": "_accountBalanceSnapshots",
           "nodeType": "VariableDeclaration",
-          "scope": 50,
-          "src": "741:63:0",
+          "scope": 56,
+          "src": "776:63:0",
           "stateVariable": true,
           "storageLocation": "default",
           "typeDescriptions": {
-            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$45_storage_$",
+            "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$51_storage_$",
             "typeString": "mapping(address => struct StructContract.Snapshots)"
           },
           "typeName": {
-            "id": 48,
+            "id": 54,
             "keyType": {
-              "id": 46,
+              "id": 52,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "750:7:0",
+              "src": "785:7:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
                 "typeString": "address"
               }
             },
             "nodeType": "Mapping",
-            "src": "741:30:0",
+            "src": "776:30:0",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$45_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Snapshots_$51_storage_$",
               "typeString": "mapping(address => struct StructContract.Snapshots)"
             },
             "valueType": {
               "contractScope": null,
-              "id": 47,
+              "id": 53,
               "name": "Snapshots",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 45,
-              "src": "761:9:0",
+              "referencedDeclaration": 51,
+              "src": "796:9:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Snapshots_$45_storage_ptr",
+                "typeIdentifier": "t_struct$_Snapshots_$51_storage_ptr",
                 "typeString": "struct StructContract.Snapshots"
               }
             }
@@ -571,9 +649,9 @@
           "visibility": "private"
         }
       ],
-      "scope": 51,
-      "src": "602:205:0"
+      "scope": 57,
+      "src": "637:205:0"
     }
   ],
-  "src": "95:713:0"
+  "src": "95:748:0"
 }

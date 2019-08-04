@@ -20,7 +20,8 @@ contract EnumContract {
 
 contract BytesContract {
     bytes data;
-    function test() public {
+    function test(uint8 receiver) public {
+      receiver = 10;
       data.pop(); // Use of pop built-in function for `bytes` type
     }
 }

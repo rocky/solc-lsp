@@ -90,6 +90,16 @@ interface TempInfo {
   functionName: string
 };
 
+/* Function Signature, sans return type */
+export interface Signature {
+  params: Array<{paramName: string, paramType: string}>;
+};
+
+/* What's the funtion signature for a contract function? */
+export interface ContractFnToSignature {
+  [contractFnName: string]: Signature;
+};
+
 export class StaticInfo {
   startOffset: StartList = {
     list: [],
@@ -114,8 +124,10 @@ export class StaticInfo {
   arrays: any = new Set([]);   // Set of names of array variables
   bytes: any = new Set([]);   // Set of names of variables of the `bytes` type.
   enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
+  fns: ContractFnToSignature = {};
   structs: SolcNameToStrList = {}; // Map of struct definitions
-  nodeTypeCallbackFn: NodeTypeCallbackFns = {};
+  nodeTypeCallbackFnPre: NodeTypeCallbackFns = {};
+  nodeTypeCallbackFnPost: NodeTypeCallbackFns = {};
   nodeType: NodeTypeToSet = {};
   tempInfo: TempInfo = {contractName: "", functionName: ""};
 
@@ -125,20 +137,50 @@ export class StaticInfo {
   }
 
   readNodeTypeCallbacks(): void {
-    const callbackDir = join(__dirname, "./nodetype-callback");
-    const paths = readdirSync(callbackDir);
+    // TODO: put in a loop over pre/post?
+    let callbackDir = join(__dirname, "./nodetype-callback-pre");
+    let paths = readdirSync(callbackDir);
     for (const pathName of paths) {
       const extIndex = pathName.length - 3;
       if (pathName.substring(extIndex) === ".js") {
         // console.log(file); // XXX
         const mod = require(join(callbackDir, pathName));
         const name = pathName.substr(0, extIndex);
-        this.nodeTypeCallbackFn[name] = mod.register();
+        this.nodeTypeCallbackFnPre[name] = mod.register();
+      }
+    }
+    callbackDir = join(__dirname, "./nodetype-callback-post");
+    paths = readdirSync(callbackDir);
+    for (const pathName of paths) {
+      const extIndex = pathName.length - 3;
+      if (pathName.substring(extIndex) === ".js") {
+        // console.log(file); // XXX
+        const mod = require(join(callbackDir, pathName));
+        const name = pathName.substr(0, extIndex);
+        this.nodeTypeCallbackFnPost[name] = mod.register();
       }
     }
   }
 
-  callbackFn = (node: SolcAstNode) => {
+  /* Note: some of the below could be done either
+     pre or post */
+  callbackFnPre = (node: SolcAstNode) => {
+    const nodeType = node.nodeType;
+    if (nodeType in this.nodeTypeCallbackFnPre) {
+      this.nodeTypeCallbackFnPre[nodeType].fn(this, node);
+      if (node.name) {
+        if (!this.nodeType[nodeType]) {
+          this.nodeType[nodeType] = new Set([node.name]);
+        } else {
+          this.nodeType[nodeType].add(node.name);
+        }
+      }
+      node.contractName = this.tempInfo.contractName;
+      node.functionName = this.tempInfo.functionName;
+    }
+  }
+
+  callbackFnPost = (node: SolcAstNode) => {
     const solcRange = sourceSolcRangeFromSrc(node.src);
     const start = solcRange.start;
     if (!this.startOffset.list[start]) {
@@ -150,6 +192,17 @@ export class StaticInfo {
         id: node.id
       });
     this.solcIds[node.id] = node;
+    const nodeType = node.nodeType;
+    if (nodeType in this.nodeTypeCallbackFnPost) {
+      this.nodeTypeCallbackFnPost[nodeType].fn(this, node);
+    }
+    if (node.name == "bytes") {
+        const parent = node.parent;
+        if (parent && parent.nodeType == "VariableDeclaration") {
+        const parentName: string = parent.name;
+        this.bytes.add(parentName);
+        }
+    }
     if ("referencedDeclaration" in node) {
       const declId = node.referencedDeclaration;
       if (declId !== null) {
@@ -160,27 +213,6 @@ export class StaticInfo {
         }
       }
     }
-
-    const nodeType = node.nodeType;
-    if (nodeType in this.nodeTypeCallbackFn) {
-      this.nodeTypeCallbackFn[nodeType].fn(this, node);
-      if (node.name) {
-        if (!this.nodeType[nodeType]) {
-          this.nodeType[nodeType] = new Set([node.name]);
-        } else {
-          this.nodeType[nodeType].add(node.name);
-        }
-      }
-      node.contractName = this.tempInfo.contractName;
-      node.functionName = this.tempInfo.functionName;
-    }
-    if (node.name == "bytes") {
-        const parent = node.parent;
-        if (parent && parent.nodeType == "VariableDeclaration") {
-        const parentName: string = parent.name;
-        this.bytes.add(parentName);
-        }
-    }
   }
 
   /* Collect AST information in a way to make LSP functions easy.
@@ -188,7 +220,7 @@ export class StaticInfo {
    */
   gatherInfo(ast: SolcAstNode) {
     const astWalker = new SolcAstWalker();
-    astWalker.walk(ast, this.callbackFn);
+    astWalker.walk(ast, this.callbackFnPre, this.callbackFnPost);
     this.startOffset.starts = Object.keys(this.startOffset.list)
       .map(x => parseInt(x, 10)).sort(function(a, b) { return a - b });
   }

@@ -1,7 +1,7 @@
 *~
-/.DS_Store
+.DS_Store
 /.nyc_output
-/.vscode
+.vscode
 /coverage
 /out
 /package-lock.json

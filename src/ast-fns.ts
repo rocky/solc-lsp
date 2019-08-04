@@ -27,7 +27,7 @@ export function indexNodes(finfo: SolcFileInfo) {
   const callback = function(node: SolcAstNode) {
     id2node[node.id] = node;
   }
-  astWalker.walk(finfo.ast, callback);
+    astWalker.walk(finfo.ast, callback, null);
   finfo.staticInfo.solcIds = id2node;
 }
 

@@ -24,23 +24,30 @@ export declare interface SolcAstWalker {
  *   const astWalker = new SolcAstWalker();
  *   astWalker.addListener("node", listener);
  *
- * The callback is called post-order, that is, _after_ all children have
- * been visited. We do this so that the callback has available parent and
- * children nodes.
+ * The callback can be used to handle both pre-order and post-order,
+ * traversion. In post-order, all children have been visited and the callback function
+ * can make use of that. Preorder traversal can help in passing down attibutes from the
+ * top like what the current function or contract is.
  */
 
 export class SolcAstWalker extends EventEmitter {
 
-  walkInternal(ast: SolcAstNode, callback: Function) {
+    walkInternal(ast: SolcAstNode,
+		 callbackPre: Function | null,
+		 callbackPost: Function | null
+		) {
 
     if (isSolcAstNode(ast)) {
-      // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
+	    // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
+      // Here parent and children are available.
+      if (callbackPre !== null) callbackPre(ast);
+
       this.emit("node", ast);
       for (const child of this.getChildren(ast)) {
-        this.walkInternal(child, callback);
+        this.walkInternal(child, callbackPre, callbackPost);
       }
-      // do this last so that parent and children are available.
-      callback(ast);
+      // Here parent and children are available.
+      if (callbackPost !== null) callbackPost(ast);
     }
   }
 
@@ -79,8 +86,8 @@ export class SolcAstWalker extends EventEmitter {
 
 
   // Normalizes parameter callback and calls walkInternal
-  walk(ast: SolcAstNode, callback: any) {
+  walk(ast: SolcAstNode, callbackPre: Function | null, callbackPost: Function| null) {
     if (!isSolcAstNode(ast)) throw new TypeError("First argument should be a solc AST");
-    return this.walkInternal(ast, callback);
+    return this.walkInternal(ast, callbackPre, callbackPost);
   }
 }

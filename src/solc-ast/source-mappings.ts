@@ -124,7 +124,7 @@ export function nodeAtSourceSolcRange(astNodeType: string | null,
   }
 
   try {
-    astWalker.walk(ast, callback);
+    astWalker.walk(ast, callback, null);
   } catch (e) {
     if (isSolcAstNode(e)) {
       return e;
@@ -180,7 +180,7 @@ export class SourceMappings {
       }
       return true;
     }
-    astWalker.walk(ast, callback);
+    astWalker.walk(ast, callback, null);
     return found;
   }
 
