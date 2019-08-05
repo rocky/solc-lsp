@@ -90,9 +90,10 @@ interface TempInfo {
   functionName: string
 };
 
-/* Function Signature, sans return type */
+/* Function Signature */
 export interface Signature {
   params: Array<{paramName: string, paramType: string}>;
+  returns: Array<{paramName: string, paramType: string}>;
 };
 
 /* What's the funtion signature for a contract function? */
@@ -118,7 +119,7 @@ export class StaticInfo {
    *  identifiers. If the ref is a local variable then its uses will
    *  all have the same scope value or a nested scope value. */
 
-  id2uses: SolcIdMapList = {};  // Object.keys(Retrive a solc AST node id for a given id
+  id2uses: SolcIdMapList = {};  // Retrieve a solc AST node id for a given id
 
   /* Note: these don't take into account scope yet */
   arrays: any = new Set([]);   // Set of names of array variables
