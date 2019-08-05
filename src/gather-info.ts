@@ -101,6 +101,10 @@ export interface ContractFnToSignature {
   [contractFnName: string]: Signature;
 };
 
+export interface ContractFnVarToType {
+  [contractFnVarName: string]: string;
+};
+
 export class StaticInfo {
   startOffset: StartList = {
     list: [],
@@ -128,8 +132,10 @@ export class StaticInfo {
   enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
   structs: SolcNameToStrList = {}; // Map of struct definitions
 
-  fns: ContractFnToSignature = {};  // Map of functions, keyed by contract.name to its signature
   events: ContractFnToSignature = {}; // Map of events keyed by contract.name to its signature
+  fns: ContractFnToSignature = {};  // Map of functions, keyed by contract.name to its signature
+
+  vars: ContractFnVarToType = {};
 
   nodeTypeCallbackFnPre: NodeTypeCallbackFns = {};
   nodeTypeCallbackFnPost: NodeTypeCallbackFns = {};
