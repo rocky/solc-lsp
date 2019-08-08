@@ -8,7 +8,7 @@ all:
 
 #: Run tests
 check:
-	npm test
+	npm test && nyc report --reporter=text
 
 test: check
 

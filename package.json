@@ -2,8 +2,8 @@
     "name": "solc-lsp",
     "description": "A library for Solidity LSP functions",
     "author": "Rocky Bernstein",
-    "license": "MIT",
-    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "version": "1.0.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/rocky/solc-lsp"
@@ -20,7 +20,7 @@
         "@types/tape": "^4.2.33",
         "@types/vscode": "^1.36.0",
         "node-gyp": "^5.0.2",
-        "nyc": "^13.3.0",
+        "nyc": "^14.1.1",
         "tap-spec": "^5.0.0",
         "tape": "^4.11.0",
         "tape-promise": "^4.0.0",
@@ -30,7 +30,7 @@
     "scripts": {
         "build": "tsc --build",
         "watch": "tsc --build --watch",
-        "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/*.ts | tap-spec; nyc report ---reporter=text",
+        "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/*.ts | tap-spec",
         "prepare": "npm run build"
     }
 }
