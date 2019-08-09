@@ -29,13 +29,26 @@ import { LineColPosition, LineColRange, SolcAstNode, SourceMappings, SolcRange,
 import { StaticInfo } from "./gather-info";
 import { solcRangeFromLineColRange } from "./conversions";
 
-interface LspManagerConfig {
-    readonly logger: any;
-    readonly useCache: boolean;
+export interface LspManagerConfig {
+  logger: Console;
+  readonly useCache: boolean;
 }
 
-// FIXME: create an interface with fileInfo stuff.
-export type FileInfo = any;
+export interface FileInfoStruct {
+  ast: SolcAstNode
+  content: string,
+  contracts?: string[],
+  sourceList: string[],
+  fileIndex: number,
+  imported?: string[],
+  sourceMapping: any,
+  staticInfo: StaticInfo
+}
+
+export interface FileInfo {
+  [path: string]: any // FIXME: should be: FileInfoStruct;
+}
+
 
 /* Here we have barebones configuration.
 */
@@ -139,12 +152,14 @@ export class LspManager {
 
     // Add solcIds from imported sources into imported-from solcIds.
     if (solcPath in this.fileInfo) {
-      this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
+      const fileInfo = this.fileInfo[solcPath];
+      fileInfo.imported = sourceList
+        .filter((s: string) => s !== solcPath);
 
-      for (const filePath of this.fileInfo[solcPath].imported) {
+      for (const filePath of fileInfo.imported) {
         this.fileInfo[solcPath].staticInfo.solcIds = {
-          ... this.fileInfo[solcPath].staticInfo.solcIds,
-          ... this.fileInfo[filePath].staticInfo.solcIds
+          ... fileInfo.staticInfo.solcIds,
+          ... fileInfo[filePath].staticInfo.solcIds
         };
       };
     };
@@ -180,6 +195,7 @@ export class LspManager {
     }
     const finfo = this.fileInfo[filePath];
     const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
+    if (solcOffset == null) return null;
     return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
   }
 
@@ -194,13 +210,14 @@ export class LspManager {
    * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or null if nothing can be found.
    */
   solcAstNodeFromLineColRange(filePath: string, selection: LineColRange
-  ): [any, SolcAstNode] | null {
+  ): [FileInfoStruct, SolcAstNode] | null {
     if (!(filePath in this.fileInfo)) {
       return null;
     }
     const finfo = this.fileInfo[filePath];
     const solcRange = solcRangeFromLineColRange(selection, finfo.sourceMapping.lineBreaks)
-    return [finfo, finfo.staticInfo.solcRangeToAstNode(solcRange)];
+    if (solcRange == null) return null;
+    return <[FileInfoStruct, SolcAstNode] | null>[finfo, finfo.staticInfo.solcRangeToAstNode(solcRange)];
   }
 
   /**
@@ -216,6 +233,9 @@ export class LspManager {
                           ): SolcAstNode | null {
     const filePath = this.fileInfo.sourceList[solcRange.fileIndex];
     const finfo = this.fileInfo[filePath];
+    if (!(filePath in this.fileInfo)) {
+      return null;
+    }
     return finfo.staticInfo.solcRangeToAstNode(solcRange);
   }
 

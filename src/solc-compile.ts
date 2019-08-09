@@ -24,7 +24,8 @@ const CompilerSupplier = require("truffle-compile/compilerSupplier");
 const { getInstalledPathSync } = require('get-installed-path');
 
 import { dirname, isAbsolute, join, normalize, sep } from "path";
-import { truffleConfSnippetNormalize, truffleConfSnippetDefault } from "./trufstuf";
+import { truffleConfSnippetNormalize, TruffleConfigSnippet,
+         truffleConfSnippetDefault } from "./trufstuf";
 
 /**
   * remove some of the jargon from nodejs fs.stat messages
@@ -71,8 +72,8 @@ function resolveNPM(pathName: string, truffleRoot: string): string {
  *                                  for such an object.
  */
 //
-export async function compileSolc(content: string, sourcePath: string, logger: any,
-  truffleConfSnippet = truffleConfSnippetDefault
+export async function compileSolc(content: string, sourcePath: string, logger: Console,
+                                  truffleConfSnippet: TruffleConfigSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 
   interface ImportRemap {
