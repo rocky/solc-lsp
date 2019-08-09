@@ -57,7 +57,7 @@ export function getTypeDefinition(finfo: SolcFileInfo, selection: LineColRange):
   const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
   const node = sm.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
   if (node === null) return null;
-  return getDefinitionNodeFromSolcNode(finfo.staticInfo, node);
+  return getTypeDefinitionNodeFromSolcNode(finfo.staticInfo, node);
 }
 
 export function getTypeDefinitionNodeFromSolcNode(staticInfo: StaticInfo,

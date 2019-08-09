@@ -229,7 +229,7 @@ export class LspManager {
     if (filePath in this.fileInfo)
       return this.fileInfo[filePath].content.slice(solcRange.start, solcRange.start + solcRange.length);
     else
-      return '';
+      return "";
   }
 
   /**

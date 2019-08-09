@@ -27,7 +27,7 @@ tape("conversion", (t: tape.Test) => {
        ^^^^^
        of token-good.sol is line 9 characters 8-13
     */
-    let range = {
+    let range: any = {
       start: {
         line: 9,
         character: 8
@@ -35,19 +35,11 @@ tape("conversion", (t: tape.Test) => {
       end: {
         line: 9,
         character: 13
-      },
-      active: {
-        line: 8,
-        character: 13
-      },
-      anchor: {
-        line: 8,
-        character: 8
       }
     };
 
     let typeInfo = getTypeDefinition(finfo, range);
-    if (typeInfo !== null) st.deepEqual(typeInfo.id, 5, `got right definition AST id`);
+    if (typeInfo !== null) st.deepEqual(typeInfo.id, 2, `got right definition AST id`);
 
     // Do another with no range/
     // st.equal(info, null, "definition not found");
@@ -80,7 +72,7 @@ tape("conversion", (t: tape.Test) => {
       st.equal(info, null, "no type definition for contract name is right")
 
     // .. and when we can't find the dfinition...
-    range.start.line = range.end.line = 1;
+    range.start.line = range.end.line = 1000;
     typeInfo = getTypeDefinition(finfo, range);
     st.equal(typeInfo, null,
              "should return null when for typeDefinition when no AST node found")

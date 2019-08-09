@@ -63,7 +63,7 @@ export interface StartList {
 }
 
 /* Maps a solc "id" field into its SolcAstNode */
-export interface SolcIdMap {
+interface SolcIdMap {
   [id: number]: SolcAstNode;
 }
 
@@ -292,6 +292,7 @@ export class StaticInfo {
     }
     /* Unreachable since findLowerBound always finds something.
        The below is however to make typescript happy. */
+    /* istanbul ignore next */
     return null;
   }
 
@@ -336,6 +337,7 @@ export class StaticInfo {
     }
     /* Unreachable since findLowerBound always finds something.
        The below is however to make typescript happy. */
+    /* istanbul ignore next */
     return null;
   }
 
