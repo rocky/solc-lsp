@@ -27,7 +27,7 @@ tape("conversion", (t: tape.Test) => {
        ^^^^^
        of token-good.sol is line 9 characters 8-13
     */
-    const range = {
+    let range = {
       start: {
         line: 9,
         character: 8
@@ -56,19 +56,45 @@ tape("conversion", (t: tape.Test) => {
     // console.log(defInfo);
     // st.ok(defInfo);
     let info = getDefinition(finfo, range);
-    if (info !== null) st.equal(info.id, 5);
+    if (info !== null)
+      st.equal(info.id, 5, "should get right AST node for 'owner'" );
+    else
+      st.ok(info, "should have found definition for owner")
 
-    /* And when we can't find the dfinition... */
+    // When the node isn't something that has a type...
+
+    range.start.line = range.end.line = 4
+    range.start.character = 9
+    range.end.character = 17;
+
+    info = getDefinition(finfo, range);
+    if (info !== null)
+      st.ok(false, "should not have have found definition for contract name")
+    else
+      st.equal(info, null, "no definition for contract is right")
+
+    info = getTypeDefinition(finfo, range);
+    if (info !== null)
+      st.ok(false, "should not have have found type definition for contract name")
+    else
+      st.equal(info, null, "no type definition for contract name is right")
+
+    // .. and when we can't find the dfinition...
     range.start.line = range.end.line = 1;
     typeInfo = getTypeDefinition(finfo, range);
     st.equal(typeInfo, null,
-             "Should return null when for typeDefinition when no AST node found")
+             "should return null when for typeDefinition when no AST node found")
 
     info = getTypeDefinition(finfo, range);
     st.equal(typeInfo, null,
-             "Should return null when for dfinition when no AST node found")
+             "should return null when for definition when no AST node found")
 
     /* getReferences()... */
+
+    /* contract Pausable is Ownership {
+       bool is_paused;
+            ^^^^^^^^^
+    */
     const refRange = {
       start: {
         line: 21,

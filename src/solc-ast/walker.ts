@@ -48,12 +48,10 @@ export declare interface SolcAstWalker {
 export class SolcAstWalker extends EventEmitter {
 
     walkInternal(ast: SolcAstNode,
-		 callbackPre: Function | null,
-		 callbackPost: Function | null
-		) {
-
-    if (isSolcAstNode(ast)) {
-	    // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
+     callbackPre: Function | null,
+     callbackPost: Function | null
+    ) {
+      // console.log(`XXX id ${ast.id}, nodeType: ${ast.nodeType}, src: ${ast.src}`);
       // Here parent and children are available.
       if (callbackPre !== null) callbackPre(ast);
 
@@ -64,7 +62,6 @@ export class SolcAstWalker extends EventEmitter {
       // Here parent and children are available.
       if (callbackPost !== null) callbackPost(ast);
     }
-  }
 
   getChildren(astItem: SolcAstNode): Array<SolcAstNode> {
     let children: Array<SolcAstNode> = [];
@@ -98,7 +95,6 @@ export class SolcAstWalker extends EventEmitter {
     astItem.children = children;
     return children;
   }
-
 
   // Normalizes parameter callback and calls walkInternal
   walk(ast: SolcAstNode, callbackPre: Function | null, callbackPost: Function| null) {

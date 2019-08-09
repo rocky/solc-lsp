@@ -5,9 +5,9 @@ const fs = require("fs");
 
 tape("SolcASTWalker", (t: tape.Test) => {
     const astWalker = new SolcAstWalker();
-    const solidityAst = join(__dirname,  "/resources/ast.json");
-    const ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
     t.test("ASTWalk", (st: tape.Test) => {
+	let solidityAst = join(__dirname,  "/resources/ast.json");
+	let ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
 	const astNodeCount = 91;
 	// st.plan(1 + astNodeCount);
 	let count: number = 0;
@@ -31,6 +31,17 @@ tape("SolcASTWalker", (t: tape.Test) => {
 	st.equal(count, astNodeCount, "traverses all AST nodes");
 	st.equal(count, listenCount, "listen called back for AST nodes");
 
+	count = 0;
+	solidityAst = join(__dirname,  "/resources/MetaCoin.ast");
+
+	// This is lame, but should work. */
+	astWalker.walk(ast, null, null);
+
+	t.throws(function() {
+	    astWalker.walk(<SolcAstNode><unknown>null, null, null);
+	});
+
+	ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));
 	// astWalker.walk(ast, (node) => {
 	//     //     count += 1;
 	//     // });

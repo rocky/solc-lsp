@@ -18,7 +18,7 @@ import { NodeTypeCallbackFn, StaticInfo } from "../gather-info";
 
 function addArrayDecl(staticInfo: StaticInfo, node: SolcAstNode) {
     const parent = node.parent;
-    if (parent && parent.nodeType == "VariableDeclaration") {
+    if (parent && parent.nodeType === "VariableDeclaration") {
 	const parentName: string = parent.name;
 	staticInfo.arrays.add(parentName);
     }

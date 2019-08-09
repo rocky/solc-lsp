@@ -290,6 +290,8 @@ export class StaticInfo {
       // this.startOffset.cache[offset] = astNode;
       return astNode;
     }
+    /* Unreachable since findLowerBound always finds something.
+       The below is however to make typescript happy. */
     return null;
   }
 
@@ -332,6 +334,8 @@ export class StaticInfo {
       // this.startOffset.cache[offset] = astNode;
       return astNode;
     }
+    /* Unreachable since findLowerBound always finds something.
+       The below is however to make typescript happy. */
     return null;
   }
 

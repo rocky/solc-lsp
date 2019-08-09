@@ -54,6 +54,15 @@ tape("gather-info", (t: tape.Test) => {
           st.ok(false, `All nodes, e.g. ${node.id} should children`);
       }
     }
+
+    const staticInfo2 = new StaticInfo({
+      id: 0,
+      nodeType: "Contract",
+      src: "0:1:0"
+    });
+    let node = staticInfo2.offsetToAstNode(10);
+    st.equal(node, null, `should fail to find ast node with wacky offset`);
+
     st.end();
   });
 
@@ -80,7 +89,7 @@ tape("gather-info", (t: tape.Test) => {
   });
 
   t.test("StaticInfoFields", (st: tape.Test) => {
-    const solidityPath = join(__dirname, "/resources/lang-features.json");
+    const solidityPath = join(__dirname, "/resources/lang-features-ast.json");
     const solidityJSON = JSON.parse(getFileContent(solidityPath));
     const staticInfo = new StaticInfo(solidityJSON);
 
