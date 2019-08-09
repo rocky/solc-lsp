@@ -152,14 +152,12 @@ export class LspManager {
 
     // Add solcIds from imported sources into imported-from solcIds.
     if (solcPath in this.fileInfo) {
-      const fileInfo = this.fileInfo[solcPath];
-      fileInfo.imported = sourceList
-        .filter((s: string) => s !== solcPath);
+      this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
 
-      for (const filePath of fileInfo.imported) {
+      for (const filePath of this.fileInfo[solcPath].imported) {
         this.fileInfo[solcPath].staticInfo.solcIds = {
-          ... fileInfo.staticInfo.solcIds,
-          ... fileInfo[filePath].staticInfo.solcIds
+          ... this.fileInfo[solcPath].staticInfo.solcIds,
+          ... this.fileInfo[filePath].staticInfo.solcIds
         };
       };
     };
