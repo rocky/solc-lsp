@@ -11,8 +11,7 @@ if (process.argv.length != 3) {
     process.exit(-1);
 }
 
-const lspConfig = {};
-const lspMgr = new lspM.LspManager(lspConfig);
+const lspMgr = new lspM.LspManager();
 
 let solidity_code;
 const solidity_file = process.argv[2];
@@ -20,11 +19,12 @@ const solidity_file = process.argv[2];
 try {
   solidity_code = fs.readFileSync(solidity_file, 'utf8');
 } catch (err) {
-    console.log('Error opening input file' + err.message);
+    console.log('Error opening input file ' + err.message);
     process.exit(-1);
 }
 
-lspMgr.compile(solidity_code, solidity_file).then((compiled) => {
+debugger
+lspMgr.compile(solidity_code, solidity_file, lspMgr.logger).then((compiled) => {
     console.log(util.inspect(compiled));
     if (!compiled.contracts) {
 	if (compiled.errors) {

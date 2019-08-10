@@ -30,9 +30,13 @@ import { truffleConfSnippetNormalize, TruffleConfigSnippet,
 /**
   * remove some of the jargon from nodejs fs.stat messages
 */
-function fixupStatMessage(e: any) {
-  if (e.message.startsWith("ENOENT: n")) {
-    e.message = e.message.replace("ENOENT: n", "N").replace(", stat ", ". Looked for: ");
+function fixupStatMessage(err: any) {
+  if (err.message) {
+    if (err.message.startsWith("ENOENT: n")) {
+      err.message = err.message.replace("ENOENT: n", "N").replace(", stat ", ". Looked for: ");
+    } else if (err.message.startsWith("EISDIR: ")) {
+      err.message = err.message.replace("EISDIR: ", ": ");
+    }
   }
 }
 
@@ -128,6 +132,7 @@ export async function compileSolc(content: string, sourcePath: string, logger: C
         contents: getFileContent(pathNameResolved)
       };
     } catch (e) {
+      debugger
       fixupStatMessage(e);
       return { error: `${e.message}` }
     }
@@ -175,7 +180,7 @@ export async function compileSolc(content: string, sourcePath: string, logger: C
     }
     return compiled;
   } catch (err) {
-    logger.log(err);
-    return null;
+    fixupStatMessage(err);
+    return { error: `${err.message}` }
   }
 }

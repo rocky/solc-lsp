@@ -22,9 +22,15 @@ let res;
 const content = solcCompile.getFileContent(filePath);
 
 try {
-    solcCompile.compileSolc(content, filePath, console.log).then((res) => {
-	const ast = res.sources[Object.keys(res.sources)[0]].ast
-	console.log(JSON.stringify(ast, null, 2));
+    solcCompile.compileSolc(content, filePath, console.log).then((compiled) => {
+	if ("ast" in compiled) {
+	    const ast = compiled.sources[Object.keys(compiled.sources)[0]].ast
+	    console.log(JSON.stringify(ast, null, 2));
+	} else if ("errors" in compiled) {
+	    for (err of compiled.errors) {
+		console.log(err.formattedMessage);
+	    }
+	}
     });
 } catch (e) {
     console.log(e);
