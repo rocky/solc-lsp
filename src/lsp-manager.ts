@@ -18,7 +18,7 @@ limitations under the License.
    Note we are not a Language Server, but just are implementing the library that would be used for
    such a server.
 **/
-import { compileSolc, getFileContent } from "./solc-compile";
+import { solc, getFileContent } from "./solc-compile";
 import { truffleConfSnippetDefault } from "./trufstuf";
 
 // import * as solc from "solc";
@@ -96,7 +96,7 @@ export class LspManager {
       return;
     }
 
-    const compiled = await compileSolc(content, solcPath, truffleConfSnippet);
+    const compiled = await solc(content, solcPath, truffleConfSnippet);
     if (!compiled) return;
 
     // Compute sourceList, the list of sources seen.

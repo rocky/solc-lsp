@@ -75,8 +75,8 @@ function resolveNPM(pathName: string, truffleRoot: string): string {
  *                                  for such an object.
  */
 //
-export async function compileSolc(content: string, sourcePath: string,
-                                  truffleConfSnippet: TruffleConfigSnippet = truffleConfSnippetDefault
+export async function solc(content: string, sourcePath: string,
+                           truffleConfSnippet: TruffleConfigSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 
   interface ImportRemap {

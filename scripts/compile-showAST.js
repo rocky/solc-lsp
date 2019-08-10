@@ -22,7 +22,7 @@ let res;
 const content = solcCompile.getFileContent(filePath);
 
 try {
-    solcCompile.compileSolc(content, filePath).then((compiled) => {
+    solcCompile.solc(content, filePath).then((compiled) => {
 	if ("ast" in compiled) {
 	    const ast = compiled.sources[Object.keys(compiled.sources)[0]].ast
 	    console.log(JSON.stringify(ast, null, 2));
