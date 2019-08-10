@@ -96,11 +96,7 @@ export class LspManager {
       return;
     }
 
-    const logger = {
-      ...this.config.logger, ...options.logger
-    };
-
-    const compiled = await compileSolc(content, solcPath, logger, truffleConfSnippet);
+    const compiled = await compileSolc(content, solcPath, truffleConfSnippet);
     if (!compiled) return;
 
     // Compute sourceList, the list of sources seen.

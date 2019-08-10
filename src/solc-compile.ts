@@ -70,13 +70,12 @@ function resolveNPM(pathName: string, truffleRoot: string): string {
  *
  * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
  * @param sourcePath the place where the source-code string may eventually wind up
- * @param logger log function
  * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
  *                                  and "contracts_directory" attribute. See [[truffleConfsnippetdefault]]
  *                                  for such an object.
  */
 //
-export async function compileSolc(content: string, sourcePath: string, logger: Console,
+export async function compileSolc(content: string, sourcePath: string,
                                   truffleConfSnippet: TruffleConfigSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 

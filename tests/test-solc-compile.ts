@@ -5,7 +5,7 @@ tape("LSP Compile", (t: tape.Test) => {
   t.test("compile", (st: tape.Test) => {
     let filePath = __dirname + "/resources/MetaCoinR.sol";
     let content = getFileContent(filePath);
-    compileSolc(content, filePath, <Console> <unknown> console.log)
+    compileSolc(content, filePath)
       .then((compiled) => {
         t.ok(compiled);
         // MetaCoin imports a function so we have 2 sources
@@ -14,7 +14,7 @@ tape("LSP Compile", (t: tape.Test) => {
 
     filePath = __dirname + "/resources/oz-example/contracts/ERC20.sol";
     content = getFileContent(filePath);
-    compileSolc(content, filePath, <Console> <unknown> console.log)
+    compileSolc(content, filePath)
       .then((compiled) => {
         t.ok(compiled);
         t.equal(Object.keys(compiled.sources).length, 4, "solc compiles and finds NPM imports");
@@ -24,7 +24,7 @@ tape("LSP Compile", (t: tape.Test) => {
 
     filePath = __dirname + "/resources/token-bad.sol";
     content = getFileContent(filePath);
-    compileSolc(content, filePath, <Console> <unknown> console.log)
+    compileSolc(content, filePath)
       .then((compiled) => {
         // FIXME: I don't know why, but we get back a string rather than an object
         // I am guessing this is a tape-promise thing.
@@ -34,7 +34,7 @@ tape("LSP Compile", (t: tape.Test) => {
 
     filePath = __dirname + "/resources/MetaCoinBad.sol";
     content = getFileContent(filePath);
-    compileSolc(content, filePath, <Console> <unknown> console.log)
+    compileSolc(content, filePath)
       .then((compiled) => {
         // FIXME: I don't know why, but we get back a string rather than an object
         // I am guessing this is a tape-promise thing.
