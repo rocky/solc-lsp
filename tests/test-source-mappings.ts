@@ -4,9 +4,12 @@ const fs = require("fs");
 import {
     SolcAstNode, isSolcAstNode,
     LineColPosition, lineColPositionFromOffset,
+    LineColRange,
     SourceMappings,
     sourceSolcRangeFromSolcAstNode,
-} from "../src/solc-ast";
+    sourceSolcRangeFromSrc,
+    srcFromSourceSolcRange
+} from "../out/solc-ast";
 
 tape("SourceMappings", (t: tape.Test) => {
     const solidityPath = __dirname + '/resources/contract.sol';
@@ -18,12 +21,17 @@ tape("SourceMappings", (t: tape.Test) => {
     t.test("SourceMappings conversions", (st: tape.Test) => {
 	// st.plan(10);
 
+        let lcPosition = <LineColPosition>{ line: 1, character: 1 };
 	st.deepEqual(lineColPositionFromOffset(0, srcMappings.lineBreaks, 1, 1),
-		     <LineColPosition>{ line: 1, character: 1 },
+		     lcPosition,
 		     "lineColPositionFromOffset degenerate case");
-	st.deepEqual(lineColPositionFromOffset(200, srcMappings.lineBreaks, 1, 1),
-		     <LineColPosition>{ line: 17, character: 1 },
-		     "lineColPositionFromOffset conversion");
+	lcPosition =  <LineColPosition>{ line: 1, character: 16 }
+	st.deepEqual(lineColPositionFromOffset(15, srcMappings.lineBreaks, 1, 1),
+		     lcPosition,
+		     "lineColPositionFromOffset offset on linebreak");
+	st.deepEqual(srcMappings.offsetFromLineColPosition(lcPosition), 31,
+		     "lineColPostionFromoffset test");
+
 
 	/* Typescript will keep us from calling sourceSolcRangeFromAstNode
 	   with the wrong type. However, for non-typescript uses, we add
@@ -38,12 +46,10 @@ tape("SourceMappings", (t: tape.Test) => {
 		     "sourceSolcRangeFromSolcAstNode extracts a location");
 
 
-	// const srcStr = "32:6:0";
-	// st.deepEqual(srcMappings.sourceSolcRangeFromSrc(srcStr), loc,
-	// 	     "sourceSolcRangeFromSrc conversion");
-
-	// st.equal(srcMappings.srcFromSourceSolcRange(sourceSolcRangeFromSrc(srcStr)), srcStr,
-	// 	 "srcSolcRangeFromSource <-> sourceSolcRangeFromSrc roundtrip");
+	const srcStr = "32:6:0";
+	st.equal(srcFromSourceSolcRange(sourceSolcRangeFromSrc(srcStr)),
+		 srcStr,
+	 	 "srcSolcRangeFromSource <-> sourceSolcRangeFromSrc roundtrip");
 
 	// const startLC = <LineColPosition>{ line: 6, character: 6 };
 	// st.deepEqual(srcMappings.srcToLineColumnRange("45:96:0"),
@@ -61,11 +67,11 @@ tape("SourceMappings", (t: tape.Test) => {
 	// 		 start: startLC,
 	// 		 end: <LineColPosition>{ line: 13, character: 1 }
 	// 	     }, "srcToLineColumnRange skip over empty line");
-	// st.deepEqual(srcMappings.srcToLineColumnRange("-1:0:0"),
-	// 	     <LineColRange>{
-	// 		 start: null,
-	// 		 end: null
-	// 	     }, "srcToLineColumnRange invalid range");
+	st.deepEqual(srcMappings.lineColRangeFromSrc("-1:0:0", 0, 0),
+		     <LineColRange>{
+			 start: null,
+			 end: null
+		     }, "srcToLineColumnRange invalid range");
 	st.end();
     });
 
@@ -88,15 +94,11 @@ tape("SourceMappings", (t: tape.Test) => {
 	st.ok(isSolcAstNode(astNode), "findsNodeAtSourceSolcRange finds something");
 	const astNode2 = srcMappings.findNodeAtSourceSolcRange('NotARealThingToFind', loc, ast);
 	st.ok(!astNode2, "findNodeAtSourceSolcRange should not find ASTnode");
-	/**
-	st.notOk(isSolcAstNode(astNode),
-		 "findsNodeAtSourceSolcRange fails to find something when it should");
 	let astNodes = srcMappings.nodesAtPosition(null, loc, ast);
 	st.equal(astNodes.length, 2, "nodesAtPosition should find more than one astNode");
 	st.ok(isSolcAstNode(astNodes[0]), "nodesAtPosition returns only AST nodes");
 	astNodes = srcMappings.nodesAtPosition("ExpressionStatement", loc, ast);
 	st.equal(astNodes.length, 1, "nodesAtPosition filtered to a single nodeType");
-	*/
 	st.end();
     });
 });

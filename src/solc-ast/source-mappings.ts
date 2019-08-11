@@ -241,7 +241,8 @@ export class SourceMappings {
    *
    * @param src  Solc "src" object containing attributes {source} and {length}.
    */
-  lineColRangeFromSrc(src: string, lineOrigin: number, colOrigin: number): LineColRange {
+
+ lineColRangeFromSrc(src: string, lineOrigin: number, colOrigin: number): LineColRange {
     const solcRange = sourceSolcRangeFromSrc(src);
     return this.lineColRangeFromSolcRange(solcRange, lineOrigin, colOrigin)
   }
