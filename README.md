@@ -1,7 +1,10 @@
-Language Server Functions
--------------------------
+[![CircleCI](https://circleci.com/gh/ConsenSys/solc-lsp.svg?style=svg)](https://circleci.com/gh/rocky/solc-lsp)
+[![Coverage Status](https://coveralls.io/repos/github/rocky/solc-lsp/badge.svg?branch=master)](https://coveralls.io/github/rocky/solc-lsp?branch=master)
 
-Here we implement "Language Server" functions for Solidity using solc.
+Solidity Language Server Functions
+----------------------------------
+
+Here we implement "Language Server" functions for Solidity using `solc`.
 The functions are the underlying workhorse function that would be used to implement the Microsoft Language Server Protocol Specification which you is defined [here](https://microsoft.github.io/language-server-protocol/specification).
 
 However to get started and make sure what we have is complete. There is a prototype using this on the client side of a vscode extension for solidity.
