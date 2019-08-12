@@ -1,12 +1,13 @@
 *~
-.DS_Store
+.circleci
 .vscode
+.gitignore
+.npmignore
 /.nyc_output
 /coverage
-/out
 /package-lock.json
 /solc-lsp*.tgz
-/vscode/launch.json
-/vscode/tasks.json
+vscode/launch.json
+vscode/tasks.json
 node_modules
 tmp
