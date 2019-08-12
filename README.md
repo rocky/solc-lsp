@@ -3,23 +3,36 @@
 Solidity Language Server Functions
 ----------------------------------
 
-Here we implement "Language Server" functions for Solidity using `solc`.
-The functions are the underlying workhorse function that would be used to implement the Microsoft Language Server Protocol Specification which you is defined [here](https://microsoft.github.io/language-server-protocol/specification).
+Here we have "Language Server" functions for [Solidity](https://solidity.readthedocs.io/) via the _npm_ package [`solc`](https://www.npmjs.com/package/solc).
+The functions are the underlying workhorse function that would be used to implement the Microsoft Language Server Protocol Specification which is defined [here](https://microsoft.github.io/language-server-protocol/specification).
 
-However to get started and make sure what we have is complete. There is a prototype using this on the client side of a vscode extension for solidity.
+To get started and make sure what we have is complete, there is a prototype using this on the client side to provide a [VSCode extension for Solidity](https://github.com/rocky/vscode-solidity).
+
+I hope to incorporate this in the [remix](https://remix-ide.readthedocs.io/en/latest/), [etheratom](https://atom.io/packages/etheratom), [VSCode solidity](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity) and other JavaScript projects that benefit from the information in Solidity's AST.
 
 
 # Prerequisites...
 
-You need to have installed
+You need to have installed:
 
-* [nodejs](https://nodejs.org/en/). Currently node version 12 cannot be used to build a dependent package `scrypt`, so use an earlier version. See below for details
+* [nodejs](https://nodejs.org/en/). Use node version 10.x Node version 12 cannot be used. See below for details
 * [npm](https://www.npmjs.com/get-npm)
 
-There are a number of nodejs packages are needed, like [typescript](https://www.typescriptlang.org/), but you can get those via `npm`,
-which is described in a below [section](#how-to-run-code-in-this-github-repository).
+## Node version 12 and VSCode Problems
 
-# How to run code in this github repository
+One of the npm dependencies is `solc`. This _npm_ package has a dependency on the [`scrypt`](https://www.npmjs.com/package/scrypt) cryptographic package. Nodejs version 12
+doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193. I developed and tested this on node version 10.16.0.
+
+When used as a client library with the VSCode extension, I also needed to replace `script.js` with `script-js` which is currently in the `web3-eth-accounts` package.  Otherwise, VSCode will crash silently. When used inside VSCode with the language server protocol, this won't happen.
+
+
+# Installing from NPM
+
+```console
+$ npm  install solc-lsp
+```
+
+# Installing from the github repository
 
 Clone the repository.
 
@@ -27,20 +40,18 @@ Clone the repository.
 $ git clone https://github.com/rocky/solc-lsp.git
 Cloning into 'solc-lsp
 remote: Enumerating objects: 169, done.
-...
+   ...
 $ cd solc-lsp
-$ make
+$ npm install
 ```
 
-Install dependent npm packages:
+# Testing
 
 ```console
-$ make
+$ npm test
 ```
 
-This code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193\. So use an earlier version of nodejs.
-
-I also needed to replace uses of `script.js` with `script-js` and that is currently in the `web3-eth-accounts` package.
+This code runs `solc`. Specific versions of the Solidity compiler are downloaded when it is detected they are needed.
 
 # Thanks
 
