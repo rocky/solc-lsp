@@ -15,7 +15,7 @@ I hope to incorporate this in the [remix](https://remix-ide.readthedocs.io/en/la
 
 You need to have installed:
 
-* [nodejs](https://nodejs.org/en/). Use node version 10.x Node version 12 cannot be used. See below for details
+* [nodejs](https://nodejs.org/en/). Use node version 10.x. Node version 12 cannot be used. See below for details
 * [npm](https://www.npmjs.com/get-npm)
 
 ## Node version 12 and VSCode Problems
