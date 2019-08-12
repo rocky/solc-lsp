@@ -1,5 +1,4 @@
 [![CircleCI](https://circleci.com/gh/rocky/solc-lsp.svg?style=svg)](https://circleci.com/gh/rocky/solc-lsp)
-[![codecov](https://codecov.io/gh/rocky/solc-lsp/branch/master/graph/badge.svg)](https://codecov.io/gh/rocky/solc-lsp)
 
 Solidity Language Server Functions
 ----------------------------------

@@ -9,6 +9,7 @@
         "url": "https://github.com/rocky/solc-lsp"
     },
     "dependencies": {
+        "codecov": "^3.5.0",
         "find-up": "^4.1.0",
         "get-installed-path": "^4.0.8",
         "keccak": "^1.0.2",
@@ -31,7 +32,7 @@
         "build": "tsc --build",
         "coverage:text": "nyc report --reporter=text",
         "coverage:html": "nyc report --reporter=html",
-	"coveralls": "nyc report --reporter=text-lcov | coveralls",
+        "coveralls": "nyc report --reporter=text-lcov | coveralls",
         "watch": "tsc --build --watch",
         "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/test-*.ts | tap-spec",
         "prepare": "npm run build"
