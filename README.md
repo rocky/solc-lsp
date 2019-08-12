@@ -4,6 +4,8 @@ Language Server Functions
 Here we implement "Language Server" functions for Solidity using solc.
 The functions are the underlying workhorse function that would be used to implement the Microsoft Language Server Protocol Specification which you is defined [here](https://microsoft.github.io/language-server-protocol/specification).
 
+However to get started and make sure what we have is complete. There is a prototype using this on the client side of a vscode extension for solidity.
+
 
 # Prerequisites...
 
@@ -37,3 +39,7 @@ $ make
 This code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193\. So use an earlier version of nodejs.
 
 I also needed to replace uses of `script.js` with `script-js` and that is currently in the `web3-eth-accounts` package.
+
+# Thanks
+
+A big thanks to my employer, ConsenSys, for giving me the opportunity to work on this and providing the funding for this project.
