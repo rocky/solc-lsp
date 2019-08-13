@@ -27,7 +27,17 @@
         "tape-promise": "^4.0.0",
         "ts-node": "^8.3.0"
     },
-    "files": ["out", "src", "test"],
+    "files": [
+        "out",
+        "src",
+        "test"
+    ],
+    "keywords": [
+	"ethereum",
+	"lsp",
+	"solidity",
+	"vscode"
+    ],
     "main": "./out/index.js",
     "scripts": {
         "build": "tsc --build",
@@ -36,7 +46,7 @@
         "coveralls": "nyc report --reporter=text-lcov | coveralls",
         "watch": "tsc --build --watch",
         "test": "nyc --reporter=lcov --require ts-node/register tape ./tests/test-*.ts | tap-spec",
-	"preversion": "npm test",
+        "preversion": "npm test",
         "prepare": "npm run build",
         "postversion": "npm run build"
     }
