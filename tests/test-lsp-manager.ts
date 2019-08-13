@@ -19,7 +19,7 @@ tape("LspManager", (t: tape.Test) => {
     const solFilePath = join(__dirname, "/resources/MetaCoin.sol");
     const solidityStr = getFileContent(solFilePath);
 
-    await lspMgr.compile(solidityStr, solFilePath);
+    await lspMgr.compile(solFilePath, solidityStr);
 
     const fileInfo = lspMgr.fileInfo;
     const targetNode = fileInfo[solFilePath].staticInfo.solcIds[74];

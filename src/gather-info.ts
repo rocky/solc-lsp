@@ -127,10 +127,15 @@ export class StaticInfo {
     // cache: offsetAstNodeMap
   };
 
-  /* Retrive a solc AST node for a given
+  /* Retrieve a solc AST node for a given
    *  id. Object.keys(x.solcIds).sort() is generally contains the nmbers
    *  from 0 to the number of nodes into of the AST */
   solcIds: SolcIdMap = {};
+
+  /* Solidity version used in compiling information.
+   * An empty string indicates no version set yet.
+   */
+  solcVersion = "";
 
   /* Retrive a list solc AST nodes id for a given
    *  id. Object.keys(solcIds).sort() is generally the ids of
@@ -160,7 +165,8 @@ export class StaticInfo {
     functionName: "" // Note: events are treated like functions here.
   };
 
-  constructor(ast: SolcAstNode) {
+  constructor(ast: SolcAstNode, solcVersion: string) {
+    this.solcVersion = solcVersion;
     this.readNodeTypeCallbacks();
     this.gatherInfo(ast);
   }

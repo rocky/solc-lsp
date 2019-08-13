@@ -8,22 +8,22 @@ tape("gather-info", (t: tape.Test) => {
   const solidityAst = join(__dirname, "/resources/ast.json");
   const ast = JSON.parse(getFileContent(solidityAst));
 
-  const staticInfo = new StaticInfo(ast);
+  const staticInfo = new StaticInfo(ast, "0.5.10");
 
   t.test("offsetToAstNode", (st: tape.Test) => {
 
     type TupType = [number, // node id
-		    string, // src
-		    string, // nodeType
-		    string, // "type" or "type description"
-		    string, // type field
-		    number | undefined,    // parent.id
-		    number  // # of children
-		               ];
+        string, // src
+        string, // nodeType
+        string, // "type" or "type description"
+        string, // type field
+        number | undefined,    // parent.id
+        number  // # of children
+                   ];
     for (let tup of
-	 [<TupType>[62, "53:26:0", "VariableDeclaration", "type", "address", 26, 2],
-	  <TupType>[59, "53:7:0", "ElementaryTypeName", "type description", "address", 5, 0]
-	 ]) {
+   [<TupType>[62, "53:26:0", "VariableDeclaration", "type", "address", 26, 2],
+    <TupType>[59, "53:7:0", "ElementaryTypeName", "type description", "address", 5, 0]
+   ]) {
       const offset: number = tup[0];
       const src: string = tup[1];
       const nodeType = tup[2];
@@ -58,8 +58,8 @@ tape("gather-info", (t: tape.Test) => {
     const staticInfo2 = new StaticInfo({
       id: 0,
       nodeType: "Contract",
-      src: "0:1:0"
-    });
+      src: "0:1:0",
+    }, "0.5.10");
     let node = staticInfo2.offsetToAstNode(10);
     st.equal(node, null, `should fail to find ast node with wacky offset`);
 
@@ -69,21 +69,21 @@ tape("gather-info", (t: tape.Test) => {
   t.test("solcRangeToASTNode", (st: tape.Test) => {
     const solidityPath = join(__dirname, "/resources/MetaCoin.json");
     const solidityJSON = JSON.parse(getFileContent(solidityPath));
-    const staticInfo = new StaticInfo(solidityJSON.ast);
+    const staticInfo = new StaticInfo(solidityJSON.ast, "0.5.10");
     for (const tup of [["346:34:1", "VariableDeclaration"],  // exact
-			                 ["346:25:1", "Mapping"], //exact
-			                 ["346:24:1", "Mapping"],   // in range
-			                 ["346:26:1", "VariableDeclaration"],
-			                 ["347:26:1", "VariableDeclaration"],
-			                 ["347:24:1", "Mapping"]]) {
-	    const solcRange = sourceSolcRangeFromSrc(tup[0]);
-	    const astNode = staticInfo.solcRangeToAstNode(solcRange);
-	    if (astNode === null) {
-	      st.ok(false, `Should have found AST node for ${tup[0]}`);
-	    } else {
-	      st.strictEqual(isSolcAstNode(astNode), true, `should get AST for "${tup[0]}"`);
-	      st.strictEqual(astNode.nodeType, tup[1], `should get AST node of type ${tup[1]} for "${tup[0]}"`);
-	    }
+                       ["346:25:1", "Mapping"], //exact
+                       ["346:24:1", "Mapping"],   // in range
+                       ["346:26:1", "VariableDeclaration"],
+                       ["347:26:1", "VariableDeclaration"],
+                       ["347:24:1", "Mapping"]]) {
+      const solcRange = sourceSolcRangeFromSrc(tup[0]);
+      const astNode = staticInfo.solcRangeToAstNode(solcRange);
+      if (astNode === null) {
+        st.ok(false, `Should have found AST node for ${tup[0]}`);
+      } else {
+        st.strictEqual(isSolcAstNode(astNode), true, `should get AST for "${tup[0]}"`);
+        st.strictEqual(astNode.nodeType, tup[1], `should get AST node of type ${tup[1]} for "${tup[0]}"`);
+      }
     }
     st.end();
   });
@@ -91,7 +91,7 @@ tape("gather-info", (t: tape.Test) => {
   t.test("StaticInfoFields", (st: tape.Test) => {
     const solidityPath = join(__dirname, "/resources/lang-features-ast.json");
     const solidityJSON = JSON.parse(getFileContent(solidityPath));
-    const staticInfo = new StaticInfo(solidityJSON);
+    const staticInfo = new StaticInfo(solidityJSON, "0.5.10");
 
     const arrays = new Set(["data", "ids"]);
     st.deepEqual(staticInfo.arrays,  arrays);

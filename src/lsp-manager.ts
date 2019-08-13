@@ -78,26 +78,40 @@ export class LspManager {
   /**
    * Compile solidity source according to our particular setting.
    *
-   * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
-   * @param path the place where the source-code string may eventually wind up
-   * @param path compile options
+   * @param content The Solidity source-code string. Note it might not reside in the filesystem (yet)
+   * @param sourcePath The place where the source-code string may eventually wind up.
+   *                   If content is undefined, we will get the content by reading from the filesystem.
+   * @param options Additional options for this routine, e.g. whether to cache results, and what log routine to use
+   * @param truffleConfSnippet Section of truffle configuration related to solc compilation, e.g. version and optimization level.
    */
   //
-  async compile(content: string, solcPath: string,
+  async compile(sourcePath: string, content?: string,
                 options: any = { logger: this.config.logger,
                                  useCache: this.config.useCache,
                                },
                 truffleConfSnippet: any = truffleConfSnippetDefault) {
 
-    if (options.useCache && solcPath in this.fileInfo &&
-        this.fileInfo[solcPath].content === content) {
-      // We've done this before. FIXME: we also need to check that files this
-      // imports haven't changed.
-      return;
+    if (content === undefined) {
+      content = getFileContent(sourcePath)
     }
 
-    const compiled = await solc(content, solcPath, truffleConfSnippet);
-    if (!compiled) return;
+    if (options.useCache
+        && sourcePath in this.fileInfo
+        && this.fileInfo[sourcePath].content === content
+        && this.fileInfo[sourcePath].staticInfo.solcVerson ==  truffleConfSnippet.compilers.solc.version
+       ) {
+      // We've done this before. FIXME: we also need to check that files this
+      // imports haven't changed.
+      const finfo = this.fileInfo[sourcePath]
+      return {
+        sourceList: finfo.sourceList,
+        contracts: finfo.contracts,
+        cached: true,
+      }
+    }
+
+    const compiled = await solc(sourcePath, content, truffleConfSnippet);
+    if (!compiled || !("sources" in compiled)) return compiled;
 
     // Compute sourceList, the list of sources seen.
     let sourceList: Array<string> = [];
@@ -125,7 +139,7 @@ export class LspManager {
       this.fileInfo.sourceList = sourceList;
 
       if ("ast" in compiled.sources[filePath]) {
-        let fileContent = (filePath === solcPath) ? content : getFileContent(filePath);
+        let fileContent = (filePath === sourcePath) ? content : getFileContent(filePath);
 
         this.fileInfo[filePath] = {
           ast: sourceInfo.ast,
@@ -133,26 +147,26 @@ export class LspManager {
           sourceList,
           fileIndex: sourceInfo.id,
           sourceMapping: new SourceMappings(fileContent),
-          staticInfo: new StaticInfo(sourceInfo.ast)
+          staticInfo: new StaticInfo(sourceInfo.ast, compiled.solcVersion)
         };
       }
     }
 
     if ("contracts" in compiled) {
-      this.fileInfo[solcPath].contracts = compiled.contracts;
+      this.fileInfo[sourcePath].contracts = compiled.contracts;
     }
 
     // Down the line we'll do better about tracking dependecies. For now
-    // we'll just say that sources other than "solcPath" which was given, are dependencies
-    // of "solcPath"
+    // we'll just say that sources other than "sourcePath" which was given, are dependencies
+    // of "sourcePath"
 
     // Add solcIds from imported sources into imported-from solcIds.
-    if (solcPath in this.fileInfo) {
-      this.fileInfo[solcPath].imported = sourceList.filter((s: string) => s !== solcPath);
+    if (sourcePath in this.fileInfo) {
+      this.fileInfo[sourcePath].imported = sourceList.filter((s: string) => s !== sourcePath);
 
-      for (const filePath of this.fileInfo[solcPath].imported) {
-        this.fileInfo[solcPath].staticInfo.solcIds = {
-          ... this.fileInfo[solcPath].staticInfo.solcIds,
+      for (const filePath of this.fileInfo[sourcePath].imported) {
+        this.fileInfo[sourcePath].staticInfo.solcIds = {
+          ... this.fileInfo[sourcePath].staticInfo.solcIds,
           ... this.fileInfo[filePath].staticInfo.solcIds
         };
       };
@@ -169,7 +183,7 @@ export class LspManager {
    * @param compileOptions options to pass to solc
    */
   compileIfNotCompiled(solidityStr: string, filePath: string, compileOptions: any) {
-    if (!this.isCompiled(filePath)) this.compile(solidityStr, filePath, compileOptions);
+    if (!this.isCompiled(filePath)) this.compile(filePath, solidityStr, compileOptions);
   }
 
   /**

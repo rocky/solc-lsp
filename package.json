@@ -13,7 +13,7 @@
         "find-up": "^4.1.0",
         "get-installed-path": "^4.0.8",
         "keccak": "^1.0.2",
-        "solc": "^0.5.11",
+        "solc": "^0.5.10",
         "truffle-compile": "^4.2.1",
         "typescript": "^3.5.2"
     },
@@ -33,10 +33,10 @@
         "test"
     ],
     "keywords": [
-	"ethereum",
-	"lsp",
-	"solidity",
-	"vscode"
+        "ethereum",
+        "lsp",
+        "solidity",
+        "vscode"
     ],
     "main": "./out/index.js",
     "scripts": {

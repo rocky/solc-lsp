@@ -12,7 +12,7 @@ tape("conversion", (t: tape.Test) => {
   const solidityFile = join(__dirname, "/resources/token-good.sol");
   const solidityStr = fs.readFileSync(solidityFile, "utf8")
 
-  const staticInfo = new StaticInfo(ast);
+  const staticInfo = new StaticInfo(ast, "0.5.10");
 
   const finfo = <SolcFileInfo>{
     ast,

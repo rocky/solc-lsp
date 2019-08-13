@@ -27,6 +27,19 @@ import { dirname, isAbsolute, join, normalize, sep } from "path";
 import { truffleConfSnippetNormalize, TruffleConfigSnippet,
          truffleConfSnippetDefault } from "./trufstuf";
 
+export interface SolcError {
+    sourceLocation?: {
+        file: string;
+        start: number;
+        end: number;
+    };
+    type: string;  // e.g. ParserError, TypeError...
+    component: string;  // general
+    severity: "error" | "warning";
+    message: string;
+    formattedMessage: string;
+}
+
 /**
   * remove some of the jargon from nodejs fs.stat messages
 */
@@ -68,14 +81,15 @@ function resolveNPM(pathName: string, truffleRoot: string): string {
 /**
  * Compile solidity source according to our particular setting.
  *
- * @param content the Solidity source-code string. Note it might not reside in the filesystem (yet)
- * @param sourcePath the place where the source-code string may eventually wind up
+ * @param sourcePath The place where the source-code string may eventually wind up.
+ * @param content The Solidity source-code string. Note it might not reside in the filesystem (yet)
+ *                If content is undefined, we will get the content by reading from the filesystem.
  * @param truffleConfSnippetDefault part of a truffle configuration that includes the "compilers"
  *                                  and "contracts_directory" attribute. See [[truffleConfsnippetdefault]]
  *                                  for such an object.
  */
 //
-export async function solc(content: string, sourcePath: string,
+export async function solc(sourcePath: string, content?: string,
                            truffleConfSnippet: TruffleConfigSnippet = truffleConfSnippetDefault
 ): Promise<any> {
 
@@ -84,6 +98,9 @@ export async function solc(content: string, sourcePath: string,
   }
 
   let importRemap: ImportRemap = {};
+  if (content === undefined) {
+    content = getFileContent(sourcePath)
+  }
 
   /**
    * Called back by the solc when there is an import.
@@ -105,7 +122,7 @@ export async function solc(content: string, sourcePath: string,
           }
         } catch(_) { };
       }
-	    let pathNameResolved = normalize(pathName);
+      let pathNameResolved = normalize(pathName);
 
       try {
         const stat = statSync(pathNameResolved);
@@ -160,7 +177,9 @@ export async function solc(content: string, sourcePath: string,
     }
   };
 
-  if (solc.version() >= "0.5.10" &&
+  // Drop "+commit..." from version if it exists
+  const solcVersion = solc.version().split("+")[0]; //
+  if (solcVersion >= "0.5.10" &&
       !("parserErrorRecovery" in solcStandardInput.settings)) {
     // Set for extended errors
     solcStandardInput.settings.parserErrorRecovery = true;
@@ -177,9 +196,25 @@ export async function solc(content: string, sourcePath: string,
         compiled.sources[remapName].importName = source;
       }
     }
-    return compiled;
+    return { ...compiled, cached: false, solcVersion };
   } catch (err) {
+    let mess = "undisclosed error";
+    if (typeof err == "string")
+      mess = err;
+    else if ("message" in err) {
+      err = err.message
+    }
     fixupStatMessage(err);
-    return { error: `${err.message}` }
+    return {
+      cached: false,
+      solcVersion,
+      errors: [
+          <SolcError>{
+            type: "GeneralError",
+            severity: "error",
+            message: mess,
+            formattedMessage: mess
+          }
+      ] }
   }
 }
