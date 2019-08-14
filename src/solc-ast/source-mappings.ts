@@ -35,19 +35,19 @@ type LineBreaks = Array<number>;
   Code copied from remix-lib/util.js
 */
 export function findLowerBound(target: number, array: Array<number>): number {
-  var start = 0
-  var length = array.length
+  let start = 0;
+  let length = array.length;
   while (length > 0) {
-    var half = length >> 1
-    var middle = start + half
+    const half = length >> 1;
+    const middle = start + half;
     if (array[middle] <= target) {
-      length = length - 1 - half
-      start = middle + 1
+      length = length - 1 - half;
+      start = middle + 1;
     } else {
-      length = half
+      length = half;
     }
   }
-  return start - 1
+  return start - 1;
 }
 
 /**
@@ -65,7 +65,7 @@ export function lineColPositionFromOffset(offset: number, lineBreaks: LineBreaks
   return <LineColPosition>{
     line: line + lineOrigin,
     character: (offset - beginColumn) + colOrigin
-  }
+  };
 }
 
 /**
@@ -74,11 +74,11 @@ export function lineColPositionFromOffset(offset: number, lineBreaks: LineBreaks
  *
  * @param The object to convert.
  */
-export function sourceSolcRangeFromSolcAstNode(astNode: SolcAstNode): SolcRange | null {
+export function sourceSolcRangeFromSolcAstNode(astNode: SolcAstNode): SolcRange | undefined {
   if (isSolcAstNode(astNode) && astNode.src) {
-    return sourceSolcRangeFromSrc(astNode.src)
+    return sourceSolcRangeFromSrc(astNode.src);
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -89,12 +89,12 @@ export function sourceSolcRangeFromSolcAstNode(astNode: SolcAstNode): SolcRange 
  * @param src  A solc "src" field.
  */
 export function sourceSolcRangeFromSrc(src: string): SolcRange {
-  const split = src.split(':')
+  const split = src.split(':');
   return <SolcRange>{
     start: parseInt(split[0], 10),
     length: parseInt(split[1], 10),
     fileIndex: parseInt(split[2], 10)
-  }
+  };
 }
 
 /**
@@ -109,37 +109,37 @@ export function srcFromSourceSolcRange(l: SolcRange): string {
 type ASTNodeCallbackFn = (node: SolcAstNode) => void;
 
 /**
- * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "null" if none found.
+ * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "undefined" if none found.
  *
- * @param astNodeType   nodeType that a found ASTNode must be. Use "null" if any ASTNode can match.
+ * @param astNodeType   nodeType that a found ASTNode must be. Use "undefined" if any ASTNode can match.
  *                      FIXME: should this be a compare function?
  * @param sourceSolcRange "src" location that the AST node must match.
  * @param callback "callback" function that is called for each candidate AST node in the walk
  * @param astWalker "walker routine to use"
  */
-export function nodeAtSourceSolcRange(astNodeType: string | null,
+export function nodeAtSourceSolcRange(astNodeType: string | undefined,
   sourceSolcRange: SolcRange, ast: SolcAstNode,
   callback?: ASTNodeCallbackFn,
-  astWalker?: SolcAstWalker): SolcAstNode | null {
+  astWalker?: SolcAstWalker): SolcAstNode | undefined {
   if (!astWalker) {
     astWalker = new SolcAstWalker();
   }
 
   if (!callback) {
     callback = function(node: SolcAstNode) {
-      let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
+      const nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
       if (nodeSolcRange &&
-        nodeSolcRange.start == sourceSolcRange.start &&
-        nodeSolcRange.length == sourceSolcRange.length) {
-        if (astNodeType == undefined || astNodeType === node.nodeType) {
+        nodeSolcRange.start === sourceSolcRange.start &&
+        nodeSolcRange.length === sourceSolcRange.length) {
+        if (astNodeType === undefined || astNodeType === node.nodeType) {
           throw node;
         }
       }
-    }
+    };
   }
 
   try {
-    astWalker.walk(ast, callback, null);
+    astWalker.walk(ast, callback, undefined);
   } catch (e) {
     if (isSolcAstNode(e)) {
       return e;
@@ -148,7 +148,7 @@ export function nodeAtSourceSolcRange(astNodeType: string | null,
       throw e;
     }
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -167,59 +167,59 @@ export class SourceMappings {
 
     // Create a list of line offsets which will be used to map between
     // character offset and line/column positions.
-    let lineBreaks: Array<number> = [];
-    for (var pos = source.indexOf('\n'); pos >= 0; pos = source.indexOf('\n', pos + 1)) {
-      lineBreaks.push(pos)
+    const lineBreaks: Array<number> = [];
+    for (let pos = source.indexOf('\n'); pos >= 0; pos = source.indexOf('\n', pos + 1)) {
+      lineBreaks.push(pos);
     }
     this.lineBreaks = lineBreaks;
-  };
+  }
 
   /**
    * Get a list of nodes that are at the given "position".
    *
-   * @param astNodeType  Type of node to return or null.
+   * @param astNodeType  Type of node to return or undefined.
    * @param position     Character offset where AST node should be located.
    */
-  nodesAtPosition(astNodeType: string | null, position: SolcRange, ast: SolcAstNode): Array<SolcAstNode> {
-    const astWalker = new SolcAstWalker()
-    let found: Array<SolcAstNode> = [];
+  nodesAtPosition(astNodeType: string | undefined, position: SolcRange, ast: SolcAstNode): Array<SolcAstNode> {
+    const astWalker = new SolcAstWalker();
+    const found: Array<SolcAstNode> = [];
 
     const callback = function(node: SolcAstNode): boolean {
-      let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
+      const nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
       if (nodeSolcRange &&
-        nodeSolcRange.start == position.start &&
-        nodeSolcRange.length == position.length) {
+        nodeSolcRange.start === position.start &&
+        nodeSolcRange.length === position.length) {
         if (!astNodeType || astNodeType === node.nodeType) {
-          found.push(node)
+          found.push(node);
         }
       }
       return true;
-    }
-    astWalker.walk(ast, callback, null);
+    };
+    astWalker.walk(ast, callback, undefined);
     return found;
   }
 
   /**
-   * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "null" if none found.
+   * Retrieve the first "astNodeType" that includes the source map at arg instIndex, or "undefined" if none found.
    * FIXME: should we allow a boolean compare function?
    *
-   * @param astNodeType   nodeType that a found ASTNode must be. Use "null" if any ASTNode can match.
+   * @param astNodeType   nodeType that a found ASTNode must be. Use "undefined" if any ASTNode can match.
    * @param sourceSolcRange "src" location that the AST node must match.
    * @param ast "Ast we are searching" FIXME: pull out of cache
    */
-  findNodeAtSourceSolcRange(astNodeType: string | null, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | null {
+  findNodeAtSourceSolcRange(astNodeType: string | undefined, sourceSolcRange: SolcRange, ast: SolcAstNode): SolcAstNode | undefined {
     /* FIXME: check cache for SolcRange here */
     const callback = function(node: SolcAstNode) {
       /* FIXME: cache stuff here. */
-      let nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
+      const nodeSolcRange = sourceSolcRangeFromSolcAstNode(node);
       if (nodeSolcRange &&
-        nodeSolcRange.start == sourceSolcRange.start &&
-        nodeSolcRange.length == sourceSolcRange.length) {
-        if (astNodeType == undefined || astNodeType === node.nodeType) {
+        nodeSolcRange.start === sourceSolcRange.start &&
+        nodeSolcRange.length === sourceSolcRange.length) {
+        if (astNodeType === undefined || astNodeType === node.nodeType) {
           throw node;
         }
       }
-    }
+    };
     return nodeAtSourceSolcRange(astNodeType, sourceSolcRange, ast, callback);
   }
 
@@ -243,8 +243,8 @@ export class SourceMappings {
    */
 
  lineColRangeFromSrc(src: string, lineOrigin: number, colOrigin: number): LineColRange {
-    const solcRange = sourceSolcRangeFromSrc(src);
-    return this.lineColRangeFromSolcRange(solcRange, lineOrigin, colOrigin)
+   const solcRange = sourceSolcRangeFromSrc(src);
+   return this.lineColRangeFromSolcRange(solcRange, lineOrigin, colOrigin);
   }
 
   /**
@@ -261,12 +261,12 @@ export class SourceMappings {
           colOrigin),
         end: lineColPositionFromOffset(solcRange.start + solcRange.length, this.lineBreaks,
           lineOrigin, colOrigin)
-      }
+      };
     } else {
       return <LineColRange>{
-        start: null,
-        end: null
-      }
+        start: undefined,
+        end: undefined
+      };
     }
   }
 }

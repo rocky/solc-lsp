@@ -25,8 +25,8 @@ import { SolcAstWalker } from "./solc-ast/walker";
 import { sourceSolcRangeFromSrc, findLowerBound } from "./solc-ast/source-mappings";
 
 export interface NodeTypeCallbackFn {
-  fn: (staticInfo: StaticInfo, node: SolcAstNode) => void
-};
+  fn: (staticInfo: StaticInfo, node: SolcAstNode) => void;
+}
 
 /* StartIdPair is an entry in a StartList which gives an AST id number
    and the length part of its src range. It
@@ -45,7 +45,7 @@ export interface StartListMap {
 /*
    For caching offset to astNodes.
 */
-export interface offsetAstNodeMap {
+export interface OffsetAstNodeMap {
   [startOffset: number]: SolcAstNode;
 }
 
@@ -97,34 +97,34 @@ export interface NodeTypeToSet {
 
 interface NodeTypeCallbackFns {
   [fn: string]: NodeTypeCallbackFn;
-};
+}
 
 /* Temporary used in walking the AST. */
 interface TempInfo {
-  contractName: string,
-  functionName: string
-};
+  contractName: string;
+  functionName: string;
+}
 
 /* Function Signature */
 export interface Signature {
   params: Array<{paramName: string, paramType: string}>;
   returns: Array<{paramName: string, paramType: string}>;
-};
+}
 
 /* What's the funtion signature for a contract function? */
 export interface ContractFnToSignature {
   [contractFnName: string]: Signature;
-};
+}
 
 export interface ContractFnVarToType {
   [contractFnVarName: string]: string;
-};
+}
 
 export class StaticInfo {
   startOffset: StartList = {
     list: [],
     starts: [],
-    // cache: offsetAstNodeMap
+    // cache: OffsetAstNodeMap
   };
 
   /* Retrieve a solc AST node for a given
@@ -149,7 +149,7 @@ export class StaticInfo {
   arrays: any = new Set([]);   // Set of names of array variables
   bytes: any = new Set([]);   // Set of names of variables of the `bytes` type.
 
-  enums:  SolcNameToStrList = {};   // Map of enum name to its literals.
+  enums: SolcNameToStrList = {};   // Map of enum name to its literals.
   structs: SolcNameToStrList = {}; // Map of struct definitions
 
   events: ContractFnToSignature = {}; // Map of events keyed by contract.name to its signature
@@ -231,16 +231,16 @@ export class StaticInfo {
     if (nodeType in this.nodeTypeCallbackFnPost) {
       this.nodeTypeCallbackFnPost[nodeType].fn(this, node);
     }
-    if (node.name == "bytes") {
+    if (node.name === "bytes") {
         const parent = node.parent;
-        if (parent && parent.nodeType == "VariableDeclaration") {
+        if (parent && parent.nodeType === "VariableDeclaration") {
         const parentName: string = parent.name;
         this.bytes.add(parentName);
         }
     }
     if ("referencedDeclaration" in node) {
       const declId = node.referencedDeclaration;
-      if (declId !== null) {
+      if (declId !== undefined) {
         if (declId in this.id2uses) {
           this.id2uses[declId].push(node);
         } else {
@@ -257,14 +257,14 @@ export class StaticInfo {
     const astWalker = new SolcAstWalker();
     astWalker.walk(ast, this.callbackFnPre, this.callbackFnPost);
     this.startOffset.starts = Object.keys(this.startOffset.list)
-      .map(x => parseInt(x, 10)).sort(function(a, b) { return a - b });
+      .map(x => parseInt(x, 10)).sort(function(a, b) { return a - b; });
   }
 
   /* Find an AST node that is closest to offset and if there are several
      at the offset, get the one with the smallest length.
      FIXME: generalize to other conditions other than say length.
    */
-  offsetToAstNode(offset: number): SolcAstNode | null {
+  offsetToAstNode(offset: number): SolcAstNode | undefined {
     const starts = this.startOffset.starts;
     let lb = findLowerBound(offset, starts);
     if (lb < 0) lb = 0;
@@ -284,14 +284,15 @@ export class StaticInfo {
          declaration.
       */
       // TODO: parameterize or pass a condition to look for?
-      let minTup: StartIdPair | null = null;
+      let minTup: StartIdPair | undefined = undefined;
       for (const tup of this.startOffset.list[startOffset]) {
         if (startOffset + tup.length > offset) {
-          if (minTup == null || minTup.length > tup.length)
+          if (minTup === undefined || minTup.length > tup.length) {
             minTup = tup;
+          }
         }
       }
-      if (minTup == null) return null;
+      if (minTup === undefined) return undefined;
       const astNode = this.solcIds[minTup.id];
       // this.startOffset.cache[offset] = astNode;
       return astNode;
@@ -299,14 +300,14 @@ export class StaticInfo {
     /* Unreachable since findLowerBound always finds something.
        The below is however to make typescript happy. */
     /* istanbul ignore next */
-    return null;
+    return undefined;
   }
 
   /* Find an AST node that is closest to offset and if there are several
      at the offset, get the one with the smallest length.
      FIXME: generalize to other conditions other than say length.
    */
-  solcRangeToAstNode(range: SolcRange): SolcAstNode | null {
+  solcRangeToAstNode(range: SolcRange): SolcAstNode | undefined {
     const starts = this.startOffset.starts;
     const endOffset = range.start + range.length;
     let lb = findLowerBound(range.start, starts);
@@ -328,15 +329,16 @@ export class StaticInfo {
       */
       // TODO: parameterize or pass a condition to look for?
 
-      let minTup: StartIdPair | null = null;
+      let minTup: StartIdPair | undefined = undefined;
 
       for (const tup of this.startOffset.list[startOffset]) {
         if (startOffset + tup.length >= endOffset) {
-          if (minTup == null || minTup.length > tup.length)
+          if (minTup === undefined || minTup.length > tup.length) {
             minTup = tup;
+          }
         }
       }
-      if (minTup == null) return null;
+      if (minTup === undefined) return undefined;
       const astNode = this.solcIds[minTup.id];
       // this.startOffset.cache[offset] = astNode;
       return astNode;
@@ -344,7 +346,7 @@ export class StaticInfo {
     /* Unreachable since findLowerBound always finds something.
        The below is however to make typescript happy. */
     /* istanbul ignore next */
-    return null;
+    return undefined;
   }
 
 }

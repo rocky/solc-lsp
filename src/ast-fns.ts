@@ -41,8 +41,8 @@ export function indexNodes(finfo: SolcFileInfo) {
   const astWalker = new SolcAstWalker();
   const callback = function(node: SolcAstNode) {
     id2node[node.id] = node;
-  }
-    astWalker.walk(finfo.ast, callback, null);
+  };
+  astWalker.walk(finfo.ast, callback, undefined);
   finfo.staticInfo.solcIds = id2node;
 }
 
@@ -52,24 +52,24 @@ export function indexNodes(finfo: SolcFileInfo) {
 
   for what we are trying to support.
 */
-export function getTypeDefinition(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | null {
+export function getTypeDefinition(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | undefined {
   const sm = finfo.sourceMapping;
-  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
-  const node = sm.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
-  if (node === null) return null;
+  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks);
+  const node = sm.findNodeAtSourceSolcRange(undefined, solcLocation, finfo.ast);
+  if (node === undefined) return undefined;
   return getTypeDefinitionNodeFromSolcNode(finfo.staticInfo, node);
 }
 
 export function getTypeDefinitionNodeFromSolcNode(staticInfo: StaticInfo,
-  node: SolcAstNode): SolcAstNode | null {
+  node: SolcAstNode): SolcAstNode | undefined {
   if (node && ("typeDescriptions" in node && "referencedDeclaration" in node)) {
     const declNode = staticInfo.solcIds[node.referencedDeclaration];
     if ("typeName" in declNode) {
-      return staticInfo.solcIds[declNode.typeName.id]
+      return staticInfo.solcIds[declNode.typeName.id];
     }
     return declNode;
   }
-  return null;
+  return undefined;
 }
 
 /*
@@ -91,18 +91,18 @@ export const getSignature = getTypeDefinition;
   for what we are trying to support.
 */
 export function getDefinitionNodeFromSolcNode(staticInfo: StaticInfo,
-  node: SolcAstNode): SolcAstNode | null {
+  node: SolcAstNode): SolcAstNode | undefined {
   if (node && "referencedDeclaration" in node) {
     return staticInfo.solcIds[node.referencedDeclaration];
   }
-  return null;
+  return undefined;
 }
 
-export function getDefinition(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | null {
+export function getDefinition(finfo: SolcFileInfo, selection: LineColRange): SolcAstNode | undefined {
   const sm = finfo.sourceMapping;
-  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
-  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
-  if (node === null) return null;
+  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks);
+  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(undefined, solcLocation, finfo.ast);
+  if (node === undefined) return undefined;
   return getDefinitionNodeFromSolcNode(finfo.staticInfo, node);
 }
 
@@ -112,22 +112,22 @@ export function getDefinition(finfo: SolcFileInfo, selection: LineColRange): Sol
   for what we are trying to support.
 */
 export function getReferencesFromSolcNode(staticInfo: StaticInfo,
-  node: SolcAstNode): SolcAstList | null {
-  let declNode: SolcAstNode | null = null
-  if (node === null) return null;
+  node: SolcAstNode): SolcAstList | undefined {
+  let declNode: SolcAstNode | undefined = undefined;
+  if (node === undefined) return undefined;
   if ("referencedDeclaration" in node) {
     declNode = staticInfo.solcIds[node.referencedDeclaration];
   } else if (["VariableDeclaration"].includes(node.nodeType)) {
     declNode = node;
   }
-  if (declNode === null) return null;
+  if (declNode === undefined) return undefined;
   return staticInfo.id2uses[declNode.id];
 }
 
-export function getReferences(finfo: SolcFileInfo, selection: LineColRange): SolcAstList | null {
+export function getReferences(finfo: SolcFileInfo, selection: LineColRange): SolcAstList | undefined {
   const sm = finfo.sourceMapping;
-  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks)
-  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(null, solcLocation, finfo.ast);
-  if (node === null) return null;
+  const solcLocation = solcRangeFromLineColRange(selection, sm.lineBreaks);
+  const node = finfo.sourceMapping.findNodeAtSourceSolcRange(undefined, solcLocation, finfo.ast);
+  if (node === undefined) return undefined;
   return getReferencesFromSolcNode(finfo.staticInfo, node);
 }

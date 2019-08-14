@@ -13,11 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/**
-   Top-level routines for a Language Server Protocal functions. The main class is [[LspManager]].
-   Note we are not a Language Server, but just are implementing the library that would be used for
-   such a server.
-**/
+/*
+ * Top-level routines for a Language Server Protocal functions. The main class is [[LspManager]].
+ * Note we are not a Language Server, but just are implementing the library that would be used for
+ * such a server.
+ */
 import { solc, getFileContent } from "./solc-compile";
 import { truffleConfSnippetDefault } from "./trufstuf";
 
@@ -35,18 +35,18 @@ export interface LspManagerConfig {
 }
 
 export interface FileInfoStruct {
-  ast: SolcAstNode
-  content: string,
-  contracts?: string[],
-  sourceList: string[],
-  fileIndex: number,
-  imported?: string[],
-  sourceMapping: any,
-  staticInfo: StaticInfo
+  ast: SolcAstNode;
+  content: string;
+  contracts?: string[];
+  sourceList: string[];
+  fileIndex: number;
+  imported?: string[];
+  sourceMapping: any;
+  staticInfo: StaticInfo;
 }
 
 export interface FileInfo {
-  [path: string]: any // FIXME: should be: FileInfoStruct;
+  [path: string]: any; // FIXME: should be: FileInfoStruct;
 }
 
 
@@ -68,7 +68,7 @@ export class LspManager {
   constructor(config = defaultConfig) {
     this.config = config;
     this.fileInfo = {};
-  };
+  }
 
 
   isCompiled(path: string): boolean {
@@ -92,29 +92,29 @@ export class LspManager {
                 truffleConfSnippet: any = truffleConfSnippetDefault) {
 
     if (content === undefined) {
-      content = getFileContent(sourcePath)
+      content = getFileContent(sourcePath);
     }
 
     if (options.useCache
         && sourcePath in this.fileInfo
         && this.fileInfo[sourcePath].content === content
-        && this.fileInfo[sourcePath].staticInfo.solcVerson ==  truffleConfSnippet.compilers.solc.version
+        && this.fileInfo[sourcePath].staticInfo.solcVerson === truffleConfSnippet.compilers.solc.version
        ) {
       // We've done this before. FIXME: we also need to check that files this
       // imports haven't changed.
-      const finfo = this.fileInfo[sourcePath]
+      const finfo = this.fileInfo[sourcePath];
       return {
         sourceList: finfo.sourceList,
         contracts: finfo.contracts,
         cached: true,
-      }
+      };
     }
 
     const compiled = await solc(sourcePath, content, truffleConfSnippet);
     if (!compiled || !("sources" in compiled)) return compiled;
 
     // Compute sourceList, the list of sources seen.
-    let sourceList: Array<string> = [];
+    const sourceList: Array<string> = [];
     for (const filePath of Object.keys(compiled.sources)) {
       const source = compiled.sources[filePath];
       if ("ast" in source) {
@@ -139,7 +139,7 @@ export class LspManager {
       this.fileInfo.sourceList = sourceList;
 
       if ("ast" in compiled.sources[filePath]) {
-        let fileContent = (filePath === sourcePath) ? content : getFileContent(filePath);
+        const fileContent = (filePath === sourcePath) ? content : getFileContent(filePath);
 
         this.fileInfo[filePath] = {
           ast: sourceInfo.ast,
@@ -169,8 +169,8 @@ export class LspManager {
           ... this.fileInfo[sourcePath].staticInfo.solcIds,
           ... this.fileInfo[filePath].staticInfo.solcIds
         };
-      };
-    };
+      }
+    }
 
     return compiled;
   }
@@ -194,16 +194,16 @@ export class LspManager {
    *
    * @param filePath file location that the AST node should located in
    * @param selection position that the AST should match or minimally encompass
-   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or null if nothing can be found.
+   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or undefined if nothing can be found.
    */
   solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition
-  ): [any, SolcAstNode] | null {
+  ): [any, SolcAstNode] | undefined {
     if (!(filePath in this.fileInfo)) {
-      return null;
+      return undefined;
     }
     const finfo = this.fileInfo[filePath];
     const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
-    if (solcOffset == null) return null;
+    if (solcOffset === undefined) return undefined;
     return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
   }
 
@@ -215,17 +215,17 @@ export class LspManager {
    *
    * @param filePath file location that the AST node should located in
    * @param selection range that the AST should match or minimally encompass
-   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or null if nothing can be found.
+   * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or undefined if nothing can be found.
    */
   solcAstNodeFromLineColRange(filePath: string, selection: LineColRange
-  ): [FileInfoStruct, SolcAstNode] | null {
+  ): [FileInfoStruct, SolcAstNode] | undefined {
     if (!(filePath in this.fileInfo)) {
-      return null;
+      return undefined;
     }
     const finfo = this.fileInfo[filePath];
-    const solcRange = solcRangeFromLineColRange(selection, finfo.sourceMapping.lineBreaks)
-    if (solcRange == null) return null;
-    return <[FileInfoStruct, SolcAstNode] | null>[finfo, finfo.staticInfo.solcRangeToAstNode(solcRange)];
+    const solcRange = solcRangeFromLineColRange(selection, finfo.sourceMapping.lineBreaks);
+    if (solcRange === undefined) return undefined;
+    return <[FileInfoStruct, SolcAstNode] | undefined>[finfo, finfo.staticInfo.solcRangeToAstNode(solcRange)];
   }
 
   /**
@@ -235,14 +235,14 @@ export class LspManager {
    *
    * @param filePath file location that the AST node should located in
    * @param selection range that the AST should match or minimally encompass
-   * @returns found SolcASTNode or null if nothing can be found
+   * @returns found SolcASTNode or undefined if nothing can be found
    */
   solcAstNodeFromSolcRange(solcRange: SolcRange
-                          ): SolcAstNode | null {
+                          ): SolcAstNode | undefined {
     const filePath = this.fileInfo.sourceList[solcRange.fileIndex];
     const finfo = this.fileInfo[filePath];
     if (!(filePath in this.fileInfo)) {
-      return null;
+      return undefined;
     }
     return finfo.staticInfo.solcRangeToAstNode(solcRange);
   }
@@ -254,10 +254,11 @@ export class LspManager {
    */
   textFromSolcRange(solcRange: SolcRange): string {
     const filePath = this.fileInfo.sourceList[solcRange.fileIndex];
-    if (filePath in this.fileInfo)
+    if (filePath in this.fileInfo) {
       return this.fileInfo[filePath].content.slice(solcRange.start, solcRange.start + solcRange.length);
-    else
+    } else {
       return "";
+    }
   }
 
   /**
@@ -276,7 +277,7 @@ export class LspManager {
     } else {
       this.config.logger.log(`Information about ${path} not found`);
     }
-    return null;
+    return undefined;
   }
 
   gotoTypeDefinition(path: string, selection: LineColRange) {
@@ -286,7 +287,7 @@ export class LspManager {
     } else {
       this.config.logger.log(`Information about ${path} not found`);
     }
-    return null;
+    return undefined;
   }
 
 }

@@ -29,7 +29,7 @@ tape("LspManager", (t: tape.Test) => {
     st.ok(lspMgr.isCompiled(solFilePath),
           "isCompiled should be set after compiling file");
 
-    if (defNode === null) {
+    if (defNode === undefined) {
       st.ok(false, "should have found id from imported source")
     } else {
       st.isEqual(defNode.id, 111, "found definition (getBalance) for node id 74");
@@ -53,7 +53,7 @@ tape("LspManager", (t: tape.Test) => {
     };
 
     let astNode = lspMgr.solcAstNodeFromSolcRange(solcRange)
-    if (astNode === null)
+    if (astNode === undefined)
       st.ok(false, "solcAstFromSolcNode should have returned an AST node");
     else {
       st.isEqual(astNode.id, 57, "solcAstFromSolcNode should find right AST node");
@@ -63,7 +63,7 @@ tape("LspManager", (t: tape.Test) => {
     const lcRange = sm.lineColRangeFromSolcRange(solcRange);
 
     const astNodePair = lspMgr.solcAstNodeFromLineColRange(solFilePath, lcRange);
-    if (astNodePair === null)
+    if (astNodePair === undefined)
       st.ok(false, "solcAstFromLineColRange should have returned an AST node");
     else {
       st.isEqual(astNodePair[0].ast.id, 96,
@@ -83,13 +83,13 @@ tape("LspManager", (t: tape.Test) => {
     range.active = range.anchor = range.end;
 
     astNode = lspMgr.gotoTypeDefinition(solFilePath, range);
-    if (astNode === null)
+    if (astNode === undefined)
       st.ok(false, "should have found type definition for MetaCoin 'balance'");
     else
       st.isEqual(astNode.id, 5, "found type definition for MetaCoin (balance)");
 
     astNode = lspMgr.gotoDefinition(solFilePath, range);
-    if (astNode === null)
+    if (astNode === undefined)
       st.ok(false, "should have found definition for Metacoin 'balance'");
     else {
       st.isEqual(astNode.id, 6, "found definition MetaCoin balance");
@@ -97,15 +97,15 @@ tape("LspManager", (t: tape.Test) => {
 
     // And when we have an invalid path...
     astNode = lspMgr.gotoTypeDefinition("bogus", range);
-    st.equal(astNode, null);
+    st.equal(astNode, undefined);
     astNode = lspMgr.gotoDefinition("bogus", range);
-    st.equal(astNode, null);
+    st.equal(astNode, undefined);
 
 
-    // if (typeInfo !== null) st.deepEqual(typeInfo.id, 2, `got right definition AST id`);
+    // if (typeInfo !== undefined) st.deepEqual(typeInfo.id, 2, `got right definition AST id`);
 
     // let info = lspMgr.gotoDefinition(solFilePath, range);
-    // if (info !== null)
+    // if (info !== undefinedy)
     //   st.equal(info.id, 5, "should get right AST node for 'owner'" );
     // else
     //   st.ok(info, "should have found definition for owner")

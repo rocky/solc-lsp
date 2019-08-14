@@ -27,7 +27,7 @@ tape("SolcASTWalker", (t: tape.Test) => {
 		st.ok(isSolcAstNode(node), "passed an solc AST node");
 	    }
 	    count += 1;
-	}, null);
+	}, undefined);
 	st.equal(count, astNodeCount, "traverses all AST nodes");
 	st.equal(count, listenCount, "listen called back for AST nodes");
 
@@ -35,10 +35,10 @@ tape("SolcASTWalker", (t: tape.Test) => {
 	solidityAst = join(__dirname,  "/resources/MetaCoin.ast");
 
 	// This is lame, but should work. */
-	astWalker.walk(ast, null, null);
+	astWalker.walk(ast, undefined, undefined);
 
 	t.throws(function() {
-	    astWalker.walk(<SolcAstNode><unknown>null, null, null);
+	    astWalker.walk(<SolcAstNode><unknown>undefined, undefined, undefined);
 	});
 
 	ast = JSON.parse(fs.readFileSync(solidityAst, 'utf8'));

@@ -69,8 +69,8 @@ tape("SourceMappings", (t: tape.Test) => {
 	// 	     }, "srcToLineColumnRange skip over empty line");
 	st.deepEqual(srcMappings.lineColRangeFromSrc("-1:0:0", 0, 0),
 		     <LineColRange>{
-			 start: null,
-			 end: null
+			 start: undefined,
+			 end: undefined
 		     }, "srcToLineColumnRange invalid range");
 	st.end();
     });
@@ -94,7 +94,7 @@ tape("SourceMappings", (t: tape.Test) => {
 	st.ok(isSolcAstNode(astNode), "findsNodeAtSourceSolcRange finds something");
 	const astNode2 = srcMappings.findNodeAtSourceSolcRange('NotARealThingToFind', loc, ast);
 	st.ok(!astNode2, "findNodeAtSourceSolcRange should not find ASTnode");
-	let astNodes = srcMappings.nodesAtPosition(null, loc, ast);
+	let astNodes = srcMappings.nodesAtPosition(undefined, loc, ast);
 	st.equal(astNodes.length, 2, "nodesAtPosition should find more than one astNode");
 	st.ok(isSolcAstNode(astNodes[0]), "nodesAtPosition returns only AST nodes");
 	astNodes = srcMappings.nodesAtPosition("ExpressionStatement", loc, ast);

@@ -39,16 +39,16 @@ tape("conversion", (t: tape.Test) => {
     };
 
     let typeInfo = getTypeDefinition(finfo, range);
-    if (typeInfo !== null) st.deepEqual(typeInfo.id, 2, `got right definition AST id`);
+    if (typeInfo !== undefined) st.deepEqual(typeInfo.id, 2, `got right definition AST id`);
 
     // Do another with no range/
-    // st.equal(info, null, "definition not found");
+    // st.equal(info, undefined, "definition not found");
     // console.log("-----");
     // const defInfo = lspMgr.gotoDefinition(solidityFile, range);
     // console.log(defInfo);
     // st.ok(defInfo);
     let info = getDefinition(finfo, range);
-    if (info !== null)
+    if (info !== undefined)
       st.equal(info.id, 5, "should get right AST node for 'owner'" );
     else
       st.ok(info, "should have found definition for owner")
@@ -60,26 +60,26 @@ tape("conversion", (t: tape.Test) => {
     range.end.character = 17;
 
     info = getDefinition(finfo, range);
-    if (info !== null)
+    if (info !== undefined)
       st.ok(false, "should not have have found definition for contract name")
     else
-      st.equal(info, null, "no definition for contract is right")
+      st.equal(info, undefined, "no definition for contract is right")
 
     info = getTypeDefinition(finfo, range);
-    if (info !== null)
+    if (info !== undefined)
       st.ok(false, "should not have have found type definition for contract name")
     else
-      st.equal(info, null, "no type definition for contract name is right")
+      st.equal(info, undefined, "no type definition for contract name is right")
 
     // .. and when we can't find the dfinition...
     range.start.line = range.end.line = 1000;
     typeInfo = getTypeDefinition(finfo, range);
-    st.equal(typeInfo, null,
-             "should return null when for typeDefinition when no AST node found")
+    st.equal(typeInfo, undefined,
+             "should return undefined when for typeDefinition when no AST node found")
 
     info = getTypeDefinition(finfo, range);
-    st.equal(typeInfo, null,
-             "should return null when for definition when no AST node found")
+    st.equal(typeInfo, undefined,
+             "should return undefined when for definition when no AST node found")
 
     /* getReferences()... */
 
@@ -120,8 +120,8 @@ tape("conversion", (t: tape.Test) => {
 
     // And when we can't find the node... */
     refInfo = getReferences(finfo, range);
-    st.equal(refInfo, null,
-             "Should return null for references when no AST node found ")
+    st.equal(refInfo, undefined,
+             "Should return undefined for references when no AST node found ")
 
     st.end();
   });

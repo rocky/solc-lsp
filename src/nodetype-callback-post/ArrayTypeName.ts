@@ -1,4 +1,5 @@
-/* Copyright 2919 Rocky Bernstein
+/*
+Copyright 2919 Rocky Bernstein
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,13 +18,13 @@ import { SolcAstNode } from "../solc-ast/types";
 import { NodeTypeCallbackFn, StaticInfo } from "../gather-info";
 
 function addArrayDecl(staticInfo: StaticInfo, node: SolcAstNode) {
-    const parent = node.parent;
-    if (parent && parent.nodeType === "VariableDeclaration") {
-	const parentName: string = parent.name;
-	staticInfo.arrays.add(parentName);
-    }
+  const parent = node.parent;
+  if (parent && parent.nodeType === "VariableDeclaration") {
+    const parentName: string = parent.name;
+    staticInfo.arrays.add(parentName);
+  }
 }
 
 export function register(): NodeTypeCallbackFn {
-    return {fn: addArrayDecl} ;
+  return {fn: addArrayDecl} ;
 }

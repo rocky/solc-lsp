@@ -20,8 +20,7 @@ import { LineColPosition, LineColRange, SolcRange } from "./solc-ast";
 export declare type LineBreaks = Array<number>;
 
 /* Note: the default is 1-origin line and column lineColPosition's  */
-export function offsetFromLineColPosition(position: LineColPosition, lineBreakPositions: LineBreaks,
-  origin: number = 1): number {
+export function offsetFromLineColPosition(position: LineColPosition, lineBreakPositions: LineBreaks, origin = 1): number {
   let lineOffset = 0;
   if (position.line > origin) {
     lineOffset = lineBreakPositions[position.line - (1 + origin)] + (1 + origin);

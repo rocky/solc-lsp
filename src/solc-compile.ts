@@ -20,7 +20,7 @@ limitations under the License.
  */
 import { statSync, readFileSync } from "fs";
 
-const CompilerSupplier = require("truffle-compile/compilerSupplier");
+import compilerSupplier = require("truffle-compile/compilerSupplier");
 const { getInstalledPathSync } = require('get-installed-path');
 
 import { dirname, isAbsolute, join, normalize, sep } from "path";
@@ -94,12 +94,12 @@ export async function solc(sourcePath: string, content?: string,
 ): Promise<any> {
 
   interface ImportRemap {
-    [importName: string]: string
+    [importName: string]: string;
   }
 
-  let importRemap: ImportRemap = {};
+  const importRemap: ImportRemap = {};
   if (content === undefined) {
-    content = getFileContent(sourcePath)
+    content = getFileContent(sourcePath);
   }
 
   /**
@@ -120,7 +120,7 @@ export async function solc(sourcePath: string, content?: string,
           if (statSync(pathName).isFile()) {
             pathName = pathNameTry;
           }
-        } catch(_) { };
+        } catch (_) { }
       }
       let pathNameResolved = normalize(pathName);
 
@@ -139,29 +139,29 @@ export async function solc(sourcePath: string, content?: string,
           // the final directory name is repeated, so remove that.
           pathNameResolved = join(dirname(dir), pathNameResolved);
         } else {
-          return { error: "Not an NPM import" }
+          return { error: "Not an NPM import" };
         }
       }
-      if (pathName !== pathNameResolved)
+      if (pathName !== pathNameResolved) {
         importRemap[pathName] = pathNameResolved;
+      }
       return {
         contents: getFileContent(pathNameResolved)
       };
     } catch (e) {
-      debugger
       fixupStatMessage(e);
-      return { error: `${e.message}` }
+      return { error: `${e.message}` };
     }
   }
 
   truffleConfSnippetNormalize(sourcePath, truffleConfSnippet);
 
-  const supplier = new CompilerSupplier(truffleConfSnippet.compilers.solc);
+  const supplier = new compilerSupplier(truffleConfSnippet.compilers.solc);
   let solc: any;
   ({ solc } = await supplier.load());
   const solcStandardInput: any = {
     ...{
-      "language": "Solidity",
+      language: "Solidity",
       sources: { [sourcePath]: { content } },
       settings: {
         // Of the output produced, what part of it?
@@ -199,10 +199,10 @@ export async function solc(sourcePath: string, content?: string,
     return { ...compiled, cached: false, solcVersion };
   } catch (err) {
     let mess = "undisclosed error";
-    if (typeof err == "string")
+    if (typeof err === "string") {
       mess = err;
-    else if ("message" in err) {
-      err = err.message
+    } else if ("message" in err) {
+      err = err.message;
     }
     fixupStatMessage(err);
     return {
@@ -215,6 +215,6 @@ export async function solc(sourcePath: string, content?: string,
             message: mess,
             formattedMessage: mess
           }
-      ] }
+      ] };
   }
 }

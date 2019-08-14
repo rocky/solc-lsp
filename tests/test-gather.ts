@@ -30,8 +30,8 @@ tape("gather-info", (t: tape.Test) => {
       const attrField = tup[3];
       const typeValue = tup[4];
       let node = staticInfo.offsetToAstNode(offset);
-      if (node === null) {
-        st.ok(false, "Node should not be null");
+      if (node === undefined) {
+        st.ok(false, "Node should not be undefined");
       } else {
         st.equal(node.nodeType, nodeType, `Node at offset ${offset}'s type`);
         st.equal(node.src, src, `Node at offset ${offset}'s src`);
@@ -47,7 +47,7 @@ tape("gather-info", (t: tape.Test) => {
         if (node.parent)
           st.equal(node.parent.id, tup[5], "check parent id");
         else
-          st.notOk(tup[5], `parent of node ${node.id} should be null`);
+          st.notOk(tup[5], `parent of node ${node.id} should be undefined`);
         if (node.children)
           st.equal(node.children.length, tup[6], "check # of children");
         else
@@ -61,7 +61,7 @@ tape("gather-info", (t: tape.Test) => {
       src: "0:1:0",
     }, "0.5.10");
     let node = staticInfo2.offsetToAstNode(10);
-    st.equal(node, null, `should fail to find ast node with wacky offset`);
+    st.equal(node, undefined, `should fail to find ast node with wacky offset`);
 
     st.end();
   });
@@ -78,7 +78,7 @@ tape("gather-info", (t: tape.Test) => {
                        ["347:24:1", "Mapping"]]) {
       const solcRange = sourceSolcRangeFromSrc(tup[0]);
       const astNode = staticInfo.solcRangeToAstNode(solcRange);
-      if (astNode === null) {
+      if (astNode === undefined) {
         st.ok(false, `Should have found AST node for ${tup[0]}`);
       } else {
         st.strictEqual(isSolcAstNode(astNode), true, `should get AST for "${tup[0]}"`);

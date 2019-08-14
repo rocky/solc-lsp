@@ -20,20 +20,30 @@ limitations under the License.
 const findUp = require('find-up');
 import { existsSync, statSync } from "fs";
 import { dirname, join } from "path";
-
+/**
+ * Solc compilation uses the "compilers" part the information in
+ * "truffle_config.js" configuration file. See
+ * https://www.trufflesuite.com/docs/truffle/reference/configuration#compiler-configuration
+ * We also have some information other than the compilers section, and
+ * things that are not part of truffle's config at all.
+ *
+ *
+ * @export
+ * @interface TruffleConfigSnippet
+ */
 export interface TruffleConfigSnippet {
   truffle_directory?: string;  // Solidity source code as a string
   contracts_directory: string;
   compilers: any;
-  quiet: boolean;
+  quiet: boolean;  // Show non-diagnostic errors or not. When we are
+                   // autocompiling we don't want compiler-diagnostic
+                   // errors.
 }
 
 const TRUFFLE_ROOT_DIRS = ["contracts", "migrations"];
 
 /*
- * The below reflects the part of a truffle-configf.json involving things
- * that effect solc compilation. See <http://truffleframework.com/docs/advanced/configuration>
- * for what that entails.
+ * Our default truffle-like configuration.
  *
  * Note: if `truffle_directory` is `undefined`, then we do not think this is a
  * a truffle project.
@@ -70,7 +80,7 @@ export function isTruffleRoot(truffleProjectDir: string): boolean {
     if (!existsSync(dir)) {
       return false;
     }
-    let stat = statSync(dir);
+    const stat = statSync(dir);
     if (!stat || !stat.isDirectory()) {
       return false;
     }
@@ -87,7 +97,7 @@ export function isTruffleRoot(truffleProjectDir: string): boolean {
     }
   }
   return false;
-};
+}
 
 /**
  * search up from file path `p` looking for a truffle project root.
@@ -112,7 +122,7 @@ export function findTruffleRoot(startPath: string): string | undefined {
     return undefined;
   }
 
-  return findUp.sync(directory =>
+  return findUp.sync((directory: string) =>
                      isTruffleRoot(directory) ? directory : undefined,
                      opts);
 }
@@ -133,7 +143,7 @@ export function truffleConfSnippetNormalize(solcSourcePath: string, snippetConf:
   }
 
   if (snippetConf.contracts_directory === undefined) {
-	  snippetConf.contracts_directory = dirname(solcSourcePath);
+          snippetConf.contracts_directory = dirname(solcSourcePath);
   }
 
   if (snippetConf.compilers.solc.version === null) {
