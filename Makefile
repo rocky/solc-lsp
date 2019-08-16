@@ -10,6 +10,10 @@ all:
 check:
 	npm run test && $(MAKE) coverage-text
 
+#: lint (tslint) Typescript source code
+lint:
+	npm run lint
+
 test: check
 
 #: Compile typescript to javascript

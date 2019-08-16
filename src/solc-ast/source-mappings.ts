@@ -225,15 +225,15 @@ export class SourceMappings {
 
   /*
      Turn a Line Column position into a (solc) Offset.
-     Note: this is 0 origin line and column LineColPosition.
+     Note: this is 0-origin line position. Column origin is 0 by default.
      FIXME: memoize.
    */
-  offsetFromLineColPosition(position: LineColPosition): number {
+  offsetFromLineColPosition(position: LineColPosition, charOrigin = 0): number {
     let lineOffset = 0;
     if (position.line > 0) {
       lineOffset = this.lineBreaks[position.line - 1];
     }
-    return lineOffset + position.character;
+    return (lineOffset + position.character) - charOrigin;
   }
 
   /**

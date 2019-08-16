@@ -138,7 +138,7 @@ export class LspManager {
       // sharing of imported contracts.
       this.fileInfo.sourceList = sourceList;
 
-      if ("ast" in compiled.sources[filePath]) {
+      if ("ast" in sourceInfo) {
         const fileContent = (filePath === sourcePath) ? content : getFileContent(filePath);
 
         this.fileInfo[filePath] = {
@@ -153,7 +153,11 @@ export class LspManager {
     }
 
     if ("contracts" in compiled) {
-      this.fileInfo[sourcePath].contracts = compiled.contracts;
+      if (sourcePath in this.fileInfo) {
+        this.fileInfo[sourcePath].contracts = compiled.contracts;
+      } else {
+        console.log(`Something went wrong: ${sourcePath} should be in ${compiled.sources}`);
+      }
     }
 
     // Down the line we'll do better about tracking dependecies. For now
@@ -196,13 +200,13 @@ export class LspManager {
    * @param selection position that the AST should match or minimally encompass
    * @returns tuple of solcASTNode and its fileInfo (fileInfo first) or undefined if nothing can be found.
    */
-  solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition
+  solcAstNodeFromLineColPosition(filePath: string, selection: LineColPosition, colOrigin=0
   ): [any, SolcAstNode] | undefined {
     if (!(filePath in this.fileInfo)) {
       return undefined;
     }
     const finfo = this.fileInfo[filePath];
-    const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection);
+    const solcOffset = finfo.sourceMapping.offsetFromLineColPosition(selection, colOrigin);
     if (solcOffset === undefined) return undefined;
     return [finfo, finfo.staticInfo.offsetToAstNode(solcOffset)];
   }
