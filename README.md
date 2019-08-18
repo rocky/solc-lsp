@@ -1,7 +1,10 @@
 [![CircleCI](https://circleci.com/gh/rocky/solc-lsp.svg?style=svg)](https://circleci.com/gh/rocky/solc-lsp)
 
 Solidity Language Server Functions
-----------------------------------
+------------------------------------------
+
+Here is a demo of a [VS Code extension](https://github.com/rocky/solc-vscode) that uses this:
+![extension demo](https://github.com/rocky/solc-vscode/blob/master/screenshots/vscode-demo.gif "Hover and LSP functions")
 
 Here we have "Language Server" functions for [Solidity](https://solidity.readthedocs.io/) via the _npm_ package [`solc`](https://www.npmjs.com/package/solc).
 The functions are the underlying workhorse function that would be used to implement the Microsoft Language Server Protocol Specification which is defined [here](https://microsoft.github.io/language-server-protocol/specification).

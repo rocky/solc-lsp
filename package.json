@@ -3,7 +3,7 @@
     "description": "A library for Solidity LSP functions",
     "author": "Rocky Bernstein",
     "license": "Apache-2.0",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/rocky/solc-lsp"
